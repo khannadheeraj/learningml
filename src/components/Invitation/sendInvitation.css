@@ -570,4 +570,74 @@
         .recipients-table-wrapper::-webkit-scrollbar-thumb:hover {
           background: #a8a8a8;
         }
+
+
+
+
+.test-send-page {
+  padding: 40px 0;
+}
+
+.test-send-card {
+  border-radius: 28px !important;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.test-send-header {
+  background: linear-gradient(135deg, #075e54, #128c7e);
+  border: none !important;
+  padding: 28px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  color: white;
+}
+
+.test-send-icon {
+  width: 70px;
+  height: 70px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+}
+
+.input-with-icon {
+  position: relative;
+}
+
+.field-icon {
+  position: absolute;
+  top: 50%;
+  left: 18px;
+  transform: translateY(-50%);
+  color: #6b7280;
+  z-index: 10;
+}
+
+.custom-input-icon {
+  padding-left: 50px !important;
+}
+
+.send-test-btn {
+  width: 100%;
+  background: linear-gradient(
+    135deg,
+    #25d366,
+    #128c7e
+  ) !important;
+  border: none !important;
+  border-radius: 14px !important;
+  padding: 14px !important;
+  font-weight: 600 !important;
+  color: white !important;
+  transition: 0.3s ease;
+}
+
+.send-test-btn:hover {
+  transform: translateY(-2px);
+}
       
