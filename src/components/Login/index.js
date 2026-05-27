@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import axios from 'axios';
 
 import {
     CContainer,
@@ -14,8 +15,17 @@ import {
     CSpinner
 } from '@coreui/react';
 
+
+import {
+    FaEye,
+    FaEyeSlash
+} from 'react-icons/fa';
+
+
+
 import { validateEmail } from '../../utils/utils';
 import { auth_service } from '../../auth/auth';
+
 
 const Login = () => {
 
@@ -27,10 +37,7 @@ const Login = () => {
     const [errors, setErrors] = useState({});
 
     const [isLoading, setIsLoading] = useState(false);
-
-    const ADMIN_USER_EMAIL = process.env.REACT_APP_ADMIN_USER_EMAIL;
-
-    const ADMIN_USER_PASSWORD = process.env.REACT_APP_ADMIN_USER_PASSWORD;
+    const [showPassword, setShowPassword] = useState(false);
 
 
     // =========================================================
@@ -109,41 +116,54 @@ const Login = () => {
 
             setIsLoading(true);
 
-            let response = {};
+            setErrors({});
 
-            // Later integrate API login
-            if (
-                ADMIN_USER_EMAIL === formValues.email &&
-                ADMIN_USER_PASSWORD === formValues.password
-            ) {
+            const BASE_URL =
+                process.env.REACT_APP_recommendServiceURL;
 
-                response = {
-                    email: formValues.email,
-                    name: 'Admin',
-                    role: 'ADMIN'
-                };
+            const response = await axios.post(
+                `${BASE_URL}/admin/login`,
+                {
+                    emailId: formValues.email,
+                    password: formValues.password
+                }
+            );
 
-                auth_service.setSessionData(
-                    response,
-                    response
-                );
+            const responseData = response?.data;
 
-                window.location.href = '/dashboard';
+            // ==========================================
+            // Save Session
+            // ==========================================
 
-            } else {
+            auth_service.setSessionData(
+                responseData,
+                responseData?.userData
+            );
 
-                setErrors({
-                    common: 'Invalid email or password'
-                });
+            // Save JWT Token
+            localStorage.setItem(
+                'adminToken',
+                responseData?.token
+            );
 
-                auth_service.clearData();
-            }
+            // Redirect
+            window.location.href = '/dashboard';
 
         } catch (error) {
 
+            console.error(
+                'Login Error:',
+                error
+            );
+
             setErrors({
-                common: 'Something went wrong'
+                common:
+                    error?.response?.data?.detail ||
+                    error?.response?.data?.message ||
+                    'Invalid email or password'
             });
+
+            auth_service.clearData();
 
         } finally {
 
@@ -323,7 +343,7 @@ const Login = () => {
 
                                         {/* Form */}
 
-                                        <CForm onSubmit={handleSubmit}>
+                                        {/* <CForm onSubmit={handleSubmit}>
 
                                             <div className="mb-4">
 
@@ -365,7 +385,6 @@ const Login = () => {
                                                     onChange={handleChange}
                                                     size="lg"
                                                 />
-
                                                 {
                                                     errors?.password && (
                                                         <small className="text-danger">
@@ -403,8 +422,157 @@ const Login = () => {
 
                                             </CButton>
 
-                                        </CForm>
+                                        </CForm> */}
 
+
+                                        {/* Form */}
+
+                                        <CForm onSubmit={handleSubmit}>
+
+                                            {/* Email */}
+
+                                            <div className="mb-4">
+
+                                                <label className="form-label fw-semibold text-dark">
+                                                    Email Address
+                                                    <span className="text-danger ms-1">*</span>
+                                                </label>
+
+                                                <div className="position-relative">
+
+                                                    <CFormInput
+                                                        type="email"
+                                                        name="email"
+                                                        placeholder="Enter your email address"
+                                                        value={formValues.email}
+                                                        onChange={handleChange}
+                                                        size="lg"
+                                                        style={{
+                                                            borderRadius: '12px',
+                                                            height: '52px',
+                                                            border: '1px solid #dcdcdc',
+                                                            boxShadow: 'none'
+                                                        }}
+                                                    />
+
+                                                </div>
+
+                                                {
+                                                    errors?.email && (
+                                                        <small className="text-danger">
+                                                            {errors?.email}
+                                                        </small>
+                                                    )
+                                                }
+
+                                            </div>
+
+
+                                            {/* Password */}
+
+                                            <div className="mb-4">
+
+                                                <label className="form-label fw-semibold text-dark">
+                                                    Password
+                                                    <span className="text-danger ms-1">*</span>
+                                                </label>
+
+                                                <div className="position-relative">
+
+                                                    <CFormInput
+                                                        type={showPassword ? 'text' : 'password'}
+                                                        name="password"
+                                                        placeholder="Enter your password"
+                                                        value={formValues.password}
+                                                        onChange={handleChange}
+                                                        size="lg"
+                                                        style={{
+                                                            borderRadius: '12px',
+                                                            height: '52px',
+                                                            border: '1px solid #dcdcdc',
+                                                            paddingRight: '55px',
+                                                            boxShadow: 'none'
+                                                        }}
+                                                    />
+
+                                                    {/* Eye Toggle */}
+
+                                                    <button
+                                                        type="button"
+                                                        onClick={() =>
+                                                            setShowPassword(!showPassword)
+                                                        }
+                                                        className="border-0 bg-transparent position-absolute top-50 end-0 translate-middle-y pe-3"
+                                                    >
+
+                                                        {
+                                                            showPassword ? (
+                                                                <FaEyeSlash
+                                                                    size={18}
+                                                                    color="#6c757d"
+                                                                />
+                                                            ) : (
+                                                                <FaEye
+                                                                    size={18}
+                                                                    color="#6c757d"
+                                                                />
+                                                            )
+                                                        }
+
+                                                    </button>
+
+                                                </div>
+
+                                                {
+                                                    errors?.password && (
+                                                        <small className="text-danger">
+                                                            {errors?.password}
+                                                        </small>
+                                                    )
+                                                }
+
+                                            </div>
+
+
+                                            {/* Login Button */}
+
+                                            <CButton
+                                                type="submit"
+                                                size="lg"
+                                                className="w-100 fw-semibold border-0 shadow-sm"
+                                                disabled={isLoading}
+                                                style={{
+                                                    background:
+                                                        'linear-gradient(90deg, #25D366 0%, #128C7E 100%)',
+                                                    borderRadius: '14px',
+                                                    height: '54px',
+                                                    fontSize: '16px',
+                                                    letterSpacing: '0.5px'
+                                                }}
+                                            >
+
+                                                {
+                                                    isLoading ? (
+                                                        <div className="d-flex align-items-center justify-content-center gap-2">
+
+                                                            <CSpinner
+                                                                size="sm"
+                                                                color="light"
+                                                            />
+
+                                                            <span>
+                                                                Signing In...
+                                                            </span>
+
+                                                        </div>
+                                                    ) : (
+                                                        'Login to Dashboard'
+                                                    )
+                                                }
+
+                                            </CButton>
+
+                                        </CForm>
 
                                         {/* Footer */}
 
