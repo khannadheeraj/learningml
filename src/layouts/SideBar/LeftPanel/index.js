@@ -2,6 +2,8 @@ import React from 'react';
 import { FaTachometerAlt, FaUniversity, FaSignOutAlt, FaBook } from 'react-icons/fa';
 import { CNavItem } from '@coreui/react';
 
+import { FaPaperPlane} from 'react-icons/fa';
+
 const createNavItem = (name, to, IconComponent) => ({
   component: CNavItem,
   name,
@@ -12,8 +14,7 @@ const createNavItem = (name, to, IconComponent) => ({
 const menuList = [
   createNavItem('Dashboard', '/dashboard', FaTachometerAlt),
 
-  // createNavItem('Colleges', '/colleges', FaUniversity),
-  // createNavItem('Course', '/course', FaBook),
+  createNavItem( 'Invitation', '/send-invitation', FaPaperPlane),
 
   createNavItem('Logout', '/logout', FaSignOutAlt),
 ];
