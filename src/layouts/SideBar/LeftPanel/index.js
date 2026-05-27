@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaTachometerAlt, FaUniversity, FaSignOutAlt, FaBook } from 'react-icons/fa';
+import { FaTachometerAlt } from 'react-icons/fa';
 import { CNavItem } from '@coreui/react';
 
 import { FaPaperPlane} from 'react-icons/fa';
@@ -16,7 +16,7 @@ const menuList = [
 
   createNavItem( 'Invitation', '/send-invitation', FaPaperPlane),
 
-  createNavItem('Logout', '/logout', FaSignOutAlt),
+  // createNavItem('Logout', '/logout', FaSignOutAlt),
 ];
 
 export default menuList;

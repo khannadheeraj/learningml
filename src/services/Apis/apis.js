@@ -1,18 +1,15 @@
 
-const API_BASE_URL = process.env.REACT_APP_MY_COLLEGE_VISION_URL;
+const API_BASE_URL = process.env.REACT_APP_recommendServiceURL;
 
 const ApiRoutes = {
 
-    Auth: {
-      AdminUserLogin: `${API_BASE_URL}/adminUser/login`,
-    },
+  Auth: {
+    AdminUserLogin: `${API_BASE_URL}/adminUser/login`,
+  },
 
-    // User: {
-    //   GetProfile: `${BASE}/user/profile`,
-    // },
-    // Dashboard: {
-    //   Stats: `${BASE}/dashboard/stats`,
-    // },
-  };
+  // Dashboard: {
+  //   Stats: `${BASE}/dashboard/stats`,
+  // },
+};
 
 export { ApiRoutes };
