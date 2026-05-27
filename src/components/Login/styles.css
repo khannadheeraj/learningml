@@ -1,0 +1,44 @@
+body {
+  background-color: #9A616D;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.login-page-bg {
+  background-color: #9A616D;
+}
+
+.login-card {
+  background-color: #fff;
+  border-radius: 20px;
+}
+
+.login-image-container {
+  background-color: #fff;
+}
+
+.login-image {
+  border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px;
+  object-fit: cover;
+}
+
+.login-btn {
+  background-color: #2e2e2e !important;
+  border: none;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
+  font-weight: bold;
+}
+
+.login-logo {
+  max-height: 80px;
+  object-fit: contain;
+}
+
+/* Focus style for form inputs */
+.custom-input:focus {
+  outline: 3px solid #007bff !important; /* Blue outline on focus */
+  border-color: #007bff !important; /* Border color */
+  box-shadow: 0 0 0 0.2rem rgba(38, 143, 255, 0.25); /* Optional: glow effect */
+}
