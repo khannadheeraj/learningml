@@ -45,6 +45,7 @@ ChartJS.register(
   Legend
 );
 
+
 const Dashboard = () => {
   const CAMPAIGN_NAME =
     "upsc_orientation_may31";
