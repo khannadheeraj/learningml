@@ -1,419 +1,606 @@
-import React, { useEffect } from 'react'
-import { CAvatar, CCard, CCardBody, CCardHeader, CCol, CProgress, CRow, CTable, CTableBody, CTableDataCell, CTableHead, CTableHeaderCell, CTableRow } from '@coreui/react';
-import CIcon from '@coreui/icons-react'
-import { cibCcAmex, cibCcApplePay, cibCcMastercard, cibCcPaypal, cibCcStripe, cibCcVisa, cibGoogle, cibFacebook, cibLinkedin, cifBr, cifEs, cifFr, cifIn, cifPl, cifUs, cibTwitter, cilPeople, cilUser, cilUserFemale } from '@coreui/icons';
-import WidgetsDropdown from '../widgets/WidgetsDropdown'
 
-/* import necessary icons fro assets here */
-import avatar1 from '../../assets/images/avatars/1.jpg'
-import avatar2 from '../../assets/images/avatars/2.jpg'
-import avatar3 from '../../assets/images/avatars/3.jpg'
-import avatar4 from '../../assets/images/avatars/4.jpg'
-import avatar5 from '../../assets/images/avatars/5.jpg'
-import avatar6 from '../../assets/images/avatars/6.jpg'
-import { progressGroupExample1 } from '../../utils/utils';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 
+import {
+  CRow,
+  CCol,
+  CCard,
+  CCardBody,
+  CSpinner,
+  CBadge,
+  CFormInput,
+  CFormSelect,
+  CTable,
+  CTableHead,
+  CTableBody,
+  CTableRow,
+  CTableHeaderCell,
+  CTableDataCell,
+  CPagination,
+  CPaginationItem,
+} from "@coreui/react";
+
+import {
+  FaWhatsapp,
+  FaPaperPlane,
+  FaCheckCircle,
+  FaEye,
+  FaTimesCircle,
+  FaSearch,
+} from "react-icons/fa";
+
+import {
+  Chart as ChartJS,
+  ArcElement,
+  Tooltip,
+  Legend,
+} from "chart.js";
+
+import { Doughnut } from "react-chartjs-2";
+
+ChartJS.register(
+  ArcElement,
+  Tooltip,
+  Legend
+);
 
 const Dashboard = () => {
+  const CAMPAIGN_NAME =
+    "upsc_orientation_may31";
+
+  const PAGE_SIZE = 10;
+
+  const [isLoading, setIsLoading] =
+    useState(false);
+
+  const [campaignData, setCampaignData] =
+    useState([]);
+
+  const [summary, setSummary] =
+    useState({});
+
+  const [pagination, setPagination] =
+    useState({});
+
+  const [searchText, setSearchText] =
+    useState("");
+
+  const [statusFilter, setStatusFilter] =
+    useState("ALL");
+
+  const [page, setPage] =
+    useState(0);
+
+  const fetchCampaignAnalytics =
+    async (currentPage = 0) => {
+      try {
+        setIsLoading(true);
+
+        const BASE_URL =
+          process.env
+            .REACT_APP_recommendServiceURL;
+
+        const response =
+          await axios.get(
+            `${BASE_URL}/analytics/campaign/${CAMPAIGN_NAME}?page=${currentPage}&size=${PAGE_SIZE}`
+          );
+
+        setCampaignData(
+          response?.data?.data || []
+        );
+
+        setSummary(
+          response?.data?.summary || {}
+        );
+
+        setPagination(
+          response?.data?.pagination || {}
+        );
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
   useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [])
+    fetchCampaignAnalytics(page);
+  }, [page]);
 
+  const getStatusColor = (
+    status
+  ) => {
+    switch (status) {
+      case "DELIVERED":
+        return "success";
+      case "FAILED":
+        return "danger";
+      case "READ":
+        return "info";
+      case "SENT":
+        return "primary";
+      default:
+        return "secondary";
+    }
+  };
 
+  const filteredData =
+    campaignData.filter((item) => {
+      const matchesSearch =
+        item?.name
+          ?.toLowerCase()
+          ?.includes(
+            searchText.toLowerCase()
+          ) ||
+        item?.phone?.includes(
+          searchText
+        );
 
-  const progressGroupExample2 = [
-    { title: 'Male', icon: cilUser, value: 53 },
-    { title: 'Female', icon: cilUserFemale, value: 43 },
-  ]
+      const matchesStatus =
+        statusFilter === "ALL"
+          ? true
+          : item?.status ===
+            statusFilter;
 
-  const progressGroupExample3 = [
-    { title: 'Organic Search', icon: cibGoogle, percent: 56, value: '191,235' },
-    { title: 'Facebook', icon: cibFacebook, percent: 15, value: '51,223' },
-    { title: 'Twitter', icon: cibTwitter, percent: 11, value: '37,564' },
-    { title: 'LinkedIn', icon: cibLinkedin, percent: 8, value: '27,319' },
-  ]
+      return (
+        matchesSearch &&
+        matchesStatus
+      );
+    });
 
-  const tableExample = [
-    {
-      avatar: { src: avatar1, status: 'success' },
-      user: {
-        name: 'Yiorgos Avraamu',
-        new: true,
-        registered: 'Jan 1, 2021',
+  const chartData = {
+    labels: [
+      "Sent",
+      "Delivered",
+      "Read",
+      "Failed",
+    ],
+    datasets: [
+      {
+        data: [
+          summary?.sent || 0,
+          summary?.delivered || 0,
+          summary?.read || 0,
+          summary?.failed || 0,
+        ],
+        backgroundColor: [
+          "#3b82f6",
+          "#22c55e",
+          "#06b6d4",
+          "#ef4444",
+        ],
+        borderWidth: 0,
       },
-      country: { name: 'USA', flag: cifUs },
-      usage: {
-        value: 50,
-        period: 'Jun 11, 2021 - Jul 10, 2021',
-        color: 'success',
-      },
-      payment: { name: 'Mastercard', icon: cibCcMastercard },
-      activity: '10 sec ago',
-    },
-    {
-      avatar: { src: avatar2, status: 'danger' },
-      user: {
-        name: 'Avram Tarasios',
-        new: false,
-        registered: 'Jan 1, 2021',
-      },
-      country: { name: 'Brazil', flag: cifBr },
-      usage: {
-        value: 22,
-        period: 'Jun 11, 2021 - Jul 10, 2021',
-        color: 'info',
-      },
-      payment: { name: 'Visa', icon: cibCcVisa },
-      activity: '5 minutes ago',
-    },
-    {
-      avatar: { src: avatar3, status: 'warning' },
-      user: { name: 'Quintin Ed', new: true, registered: 'Jan 1, 2021' },
-      country: { name: 'India', flag: cifIn },
-      usage: {
-        value: 74,
-        period: 'Jun 11, 2021 - Jul 10, 2021',
-        color: 'warning',
-      },
-      payment: { name: 'Stripe', icon: cibCcStripe },
-      activity: '1 hour ago',
-    },
-    {
-      avatar: { src: avatar4, status: 'secondary' },
-      user: { name: 'Enéas Kwadwo', new: true, registered: 'Jan 1, 2021' },
-      country: { name: 'France', flag: cifFr },
-      usage: {
-        value: 98,
-        period: 'Jun 11, 2021 - Jul 10, 2021',
-        color: 'danger',
-      },
-      payment: { name: 'PayPal', icon: cibCcPaypal },
-      activity: 'Last month',
-    },
-    {
-      avatar: { src: avatar5, status: 'success' },
-      user: {
-        name: 'Agapetus Tadeáš',
-        new: true,
-        registered: 'Jan 1, 2021',
-      },
-      country: { name: 'Spain', flag: cifEs },
-      usage: {
-        value: 22,
-        period: 'Jun 11, 2021 - Jul 10, 2021',
-        color: 'primary',
-      },
-      payment: { name: 'Google Wallet', icon: cibCcApplePay },
-      activity: 'Last week',
-    },
-    {
-      avatar: { src: avatar6, status: 'danger' },
-      user: {
-        name: 'Friderik Dávid',
-        new: true,
-        registered: 'Jan 1, 2021',
-      },
-      country: { name: 'Poland', flag: cifPl },
-      usage: {
-        value: 43,
-        period: 'Jun 11, 2021 - Jul 10, 2021',
-        color: 'success',
-      },
-      payment: { name: 'Amex', icon: cibCcAmex },
-      activity: 'Last week',
-    },
-  ]
+    ],
+  };
 
+  const deliveryRate =
+    summary?.sent > 0
+      ? (
+          (summary.delivered /
+            summary.sent) *
+          100
+        ).toFixed(1)
+      : 0;
 
-
-
+  const readRate =
+    summary?.delivered > 0
+      ? (
+          (summary.read /
+            summary.delivered) *
+          100
+        ).toFixed(1)
+      : 0;
 
   return (
-    <>
-      <WidgetsDropdown />
-      {/* <CCard className="mb-4">
-        <CCardBody>
-          <CRow>
-            <CCol sm={5}>
-              <h4 id="traffic" className="card-title mb-0">
-                Traffic
-              </h4>
-              <div className="small text-medium-emphasis">January - July 2021</div>
-            </CCol>
-            <CCol sm={7} className="d-none d-md-block">
-              <CButton color="primary" className="float-end">
-                <CIcon icon={cilCloudDownload} />
-              </CButton>
-              <CButtonGroup className="float-end me-3">
-                {['Day', 'Month', 'Year'].map((value) => (
-                  <CButton
-                    color="outline-secondary"
-                    key={value}
-                    className="mx-0"
-                    active={value === 'Month'}
-                  >
-                    {value}
-                  </CButton>
-                ))}
-              </CButtonGroup>
-            </CCol>
-          </CRow>
-          <CChartLine
-            style={{ height: '300px', marginTop: '40px' }}
-            data={{
-              labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-              datasets: [
-                {
-                  label: 'My First dataset',
-                  backgroundColor: 'transparent',
-                  borderColor: "#008C6E",
-                  pointHoverBackgroundColor: getStyle('--cui-success'),
-                  borderWidth: 1,
-                  data: [
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                  ],
-                },
-                {
-                  label: 'My Second dataset',
-                  backgroundColor: (context) => {
-                    const ctx = context.chart.ctx
-                    const gradient = ctx.createLinearGradient(0, 0, 0, 200)
-                    gradient.addColorStop(0, 'rgba(220,240,235,1)')
-                    gradient.addColorStop(1, 'rgba(252,254,253,1)')
-                    return gradient
-                  },
+    <div className="container-fluid p-4">
+      {/* HEADER */}
 
-                  borderColor: '#D0EFE7',
-                  pointHoverBackgroundColor: getStyle('--cui-info'),
-                  borderWidth: 1,
-                  data: [
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                  ],
-                  fill: true,
-                },
-                {
-                  label: 'My Third dataset',
-                  backgroundColor: 'transparent',
-                  borderColor: getStyle('--cui-danger'),
-                  pointHoverBackgroundColor: getStyle('--cui-danger'),
-                  borderWidth: 1,
-                  borderDash: [8, 5],
-                  data: [65, 65, 65, 65, 65, 65, 65],
-                },
-              ],
-            }}
-            options={{
-              maintainAspectRatio: false,
-              plugins: {
-                legend: {
-                  display: false,
-                },
-              },
-              scales: {
-                x: {
-                  grid: {
-                    drawOnChartArea: false,
-                  },
-                },
-                y: {
-                  ticks: {
-                    beginAtZero: true,
-                    maxTicksLimit: 5,
-                    stepSize: Math.ceil(250 / 5),
-                    max: 250,
-                  },
-                },
-              },
-              elements: {
-                line: {
-                  tension: 0.4,
-                },
-                point: {
-                  radius: 0,
-                  hitRadius: 10,
-                  hoverRadius: 4,
-                  hoverBorderWidth: 3,
-                },
-              },
-            }}
-          />
+      <CCard
+        className="border-0 shadow mb-4"
+        style={{
+          borderRadius: "20px",
+          background:
+            "linear-gradient(135deg,#25D366,#128C7E)",
+        }}
+      >
+        <CCardBody className="text-white p-4">
+          <div className="d-flex justify-content-between align-items-center">
+            <div>
+              <h2 className="fw-bold mb-2">
+                WhatsApp Campaign Analytics
+              </h2>
+
+              <div>
+                Campaign :
+                {" "}
+                {CAMPAIGN_NAME}
+              </div>
+            </div>
+
+            <FaWhatsapp
+              size={60}
+            />
+          </div>
         </CCardBody>
-        <CCardFooter>
-          <CRow xs={{ cols: 1 }} md={{ cols: 5 }} className="text-center">
-            {progressExample.map((item, index) => (
-              <CCol className="mb-sm-2 mb-0" key={index}>
-                <div className="text-medium-emphasis">{item.title}</div>
-                <strong>
-                  {item.value} ({item.percent}%)
-                </strong>
-                <CProgress thin className="mt-2" color={item.color} value={item.percent} />
-              </CCol>
-            ))}
-          </CRow>
-        </CCardFooter>
-      </CCard> */}
+      </CCard>
 
-      {/* <WidgetsBrand withCharts /> */}
+      {/* KPI */}
 
-      <CRow>
-        <CCol xs>
-          <CCard className="mb-4">
-            <CCardHeader>Traffic {' & '} Sales</CCardHeader>
+      <CRow className="g-4 mb-4">
+        {[
+          {
+            title: "Total",
+            value:
+              summary?.total || 0,
+            icon:
+              <FaWhatsapp />,
+            color:
+              "#6366f1",
+          },
+          {
+            title: "Sent",
+            value:
+              summary?.sent || 0,
+            icon:
+              <FaPaperPlane />,
+            color:
+              "#3b82f6",
+          },
+          {
+            title: "Delivered",
+            value:
+              summary?.delivered ||
+              0,
+            icon:
+              <FaCheckCircle />,
+            color:
+              "#22c55e",
+          },
+          {
+            title: "Read",
+            value:
+              summary?.read || 0,
+            icon: <FaEye />,
+            color:
+              "#06b6d4",
+          },
+          {
+            title: "Failed",
+            value:
+              summary?.failed ||
+              0,
+            icon:
+              <FaTimesCircle />,
+            color:
+              "#ef4444",
+          },
+        ].map((item) => (
+          <CCol
+            lg={2}
+            md={4}
+            sm={6}
+            key={item.title}
+          >
+            <CCard className="border-0 shadow-sm h-100">
+              <CCardBody>
+                <div className="d-flex justify-content-between">
+                  <div>
+                    <small className="text-muted">
+                      {item.title}
+                    </small>
+
+                    <h3
+                      className="fw-bold mt-2"
+                      style={{
+                        color:
+                          item.color,
+                      }}
+                    >
+                      {item.value}
+                    </h3>
+                  </div>
+
+                  <div
+                    style={{
+                      width: 55,
+                      height: 55,
+                      borderRadius: 15,
+                      background:
+                        `${item.color}20`,
+                      display:
+                        "flex",
+                      alignItems:
+                        "center",
+                      justifyContent:
+                        "center",
+                      color:
+                        item.color,
+                      fontSize: 22,
+                    }}
+                  >
+                    {item.icon}
+                  </div>
+                </div>
+              </CCardBody>
+            </CCard>
+          </CCol>
+        ))}
+      </CRow>
+
+      {/* ANALYTICS */}
+
+      <CRow className="g-4 mb-4">
+        <CCol lg={4}>
+          <CCard className="border-0 shadow-sm">
             <CCardBody>
-              <CRow>
-                <CCol xs={12} md={6} xl={6}>
-                  <CRow>
-                    <CCol sm={6}>
-                      <div className="border-start border-start-4 border-start-info py-1 px-3">
-                        <div className="text-medium-emphasis small">New Clients</div>
-                        <div className="fs-5 fw-semibold">9,123</div>
-                      </div>
-                    </CCol>
-                    <CCol sm={6}>
-                      <div className="border-start border-start-4 border-start-danger py-1 px-3 mb-3">
-                        <div className="text-medium-emphasis small">Recurring Clients</div>
-                        <div className="fs-5 fw-semibold">22,643</div>
-                      </div>
-                    </CCol>
-                  </CRow>
+              <h5 className="fw-bold mb-4">
+                Campaign Overview
+              </h5>
 
-                  <hr className="mt-0" />
-                  {progressGroupExample1 && progressGroupExample1.map((item, index) => (
-                    <div className="progress-group mb-4" key={index}>
-                      <div className="progress-group-prepend">
-                        <span className="text-medium-emphasis small">{item.title}</span>
-                      </div>
-                      <div className="progress-group-bars">
-                        <CProgress thin color="info" value={item.value1} />
-                        <CProgress thin color="danger" value={item.value2} />
-                      </div>
-                    </div>
-                  ))}
-                </CCol>
+              <Doughnut
+                data={chartData}
+              />
+            </CCardBody>
+          </CCard>
+        </CCol>
 
-                <CCol xs={12} md={6} xl={6}>
-                  <CRow>
-                    <CCol sm={6}>
-                      <div className="border-start border-start-4 border-start-warning py-1 px-3 mb-3">
-                        <div className="text-medium-emphasis small">Pageviews</div>
-                        <div className="fs-5 fw-semibold">78,623</div>
-                      </div>
-                    </CCol>
-                    <CCol sm={6}>
-                      <div className="border-start border-start-4 border-start-success py-1 px-3 mb-3">
-                        <div className="text-medium-emphasis small">Organic</div>
-                        <div className="fs-5 fw-semibold">49,123</div>
-                      </div>
-                    </CCol>
-                  </CRow>
+        <CCol lg={8}>
+          <CCard className="border-0 shadow-sm h-100">
+            <CCardBody>
+              <h5 className="fw-bold mb-4">
+                Performance Metrics
+              </h5>
 
-                  <hr className="mt-0" />
+              <div className="d-flex justify-content-between py-3 border-bottom">
+                <span>
+                  Delivery Rate
+                </span>
+                <strong>
+                  {
+                    deliveryRate
+                  }
+                  %
+                </strong>
+              </div>
 
-                  {progressGroupExample2.map((item, index) => (
-                    <div className="progress-group mb-4" key={index}>
-                      <div className="progress-group-header">
-                        <CIcon className="me-2" icon={item.icon} size="lg" />
-                        <span>{item.title}</span>
-                        <span className="ms-auto fw-semibold">{item.value}%</span>
-                      </div>
-                      <div className="progress-group-bars">
-                        <CProgress thin color="warning" value={item.value} />
-                      </div>
-                    </div>
-                  ))}
+              <div className="d-flex justify-content-between py-3 border-bottom">
+                <span>
+                  Read Rate
+                </span>
+                <strong>
+                  {readRate}%
+                </strong>
+              </div>
 
-                  <div className="mb-5"></div>
-
-                  {progressGroupExample3.map((item, index) => (
-                    <div className="progress-group" key={index}>
-                      <div className="progress-group-header">
-                        <CIcon className="me-2" icon={item.icon} size="lg" />
-                        <span>{item.title}</span>
-                        <span className="ms-auto fw-semibold">
-                          {item.value}{' '}
-                          <span className="text-medium-emphasis small">({item.percent}%)</span>
-                        </span>
-                      </div>
-                      <div className="progress-group-bars">
-                        <CProgress thin color="success" value={item.percent} />
-                      </div>
-                    </div>
-                  ))}
-                </CCol>
-              </CRow>
-
-              <br />
-
-              <CTable align="middle" className="mb-0 border" hover responsive>
-                <CTableHead color="light">
-                  <CTableRow>
-                    <CTableHeaderCell className="text-center">
-                      <CIcon icon={cilPeople} />
-                    </CTableHeaderCell>
-                    <CTableHeaderCell>User</CTableHeaderCell>
-                    <CTableHeaderCell className="text-center">Country</CTableHeaderCell>
-                    <CTableHeaderCell>Usage</CTableHeaderCell>
-                    <CTableHeaderCell className="text-center">Payment Method</CTableHeaderCell>
-                    <CTableHeaderCell>Activity</CTableHeaderCell>
-                  </CTableRow>
-                </CTableHead>
-                <CTableBody>
-                  {tableExample && tableExample.map((item, index) => (
-                    <CTableRow v-for="item in tableItems" key={index}>
-                      <CTableDataCell className="text-center">
-                        <CAvatar size="md" src={item.avatar.src} status={item.avatar.status} />
-                      </CTableDataCell>
-                      <CTableDataCell>
-                        <div>{item.user.name}</div>
-                        <div className="small text-medium-emphasis">
-                          <span>{item.user.new ? 'New' : 'Recurring'}</span> | Registered:{' '}
-                          {item.user.registered}
-                        </div>
-                      </CTableDataCell>
-                      <CTableDataCell className="text-center">
-                        <CIcon size="xl" icon={item.country.flag} title={item.country.name} />
-                      </CTableDataCell>
-                      <CTableDataCell>
-                        <div className="clearfix">
-                          <div className="float-start">
-                            <strong>{item.usage.value}%</strong>
-                          </div>
-                          <div className="float-end">
-                            <small className="text-medium-emphasis">{item.usage.period}</small>
-                          </div>
-                        </div>
-                        <CProgress thin color={item.usage.color} value={item.usage.value} />
-                      </CTableDataCell>
-                      <CTableDataCell className="text-center">
-                        <CIcon size="xl" icon={item.payment.icon} />
-                      </CTableDataCell>
-                      <CTableDataCell>
-                        <div className="small text-medium-emphasis">Last login</div>
-                        <strong>{item.activity}</strong>
-                      </CTableDataCell>
-                    </CTableRow>
-                  ))}
-                </CTableBody>
-              </CTable>
+              <div className="d-flex justify-content-between py-3">
+                <span>
+                  Total Records
+                </span>
+                <strong>
+                  {pagination?.totalRecords ||
+                    0}
+                </strong>
+              </div>
             </CCardBody>
           </CCard>
         </CCol>
       </CRow>
-    </>
-  )
-}
 
-export default Dashboard
+      {/* FILTER */}
+
+      <CCard className="border-0 shadow-sm mb-4">
+        <CCardBody>
+          <CRow className="g-3">
+            <CCol md={8}>
+              <div className="position-relative">
+                <FaSearch
+                  style={{
+                    position:
+                      "absolute",
+                    left: 15,
+                    top: 14,
+                    color:
+                      "#6b7280",
+                  }}
+                />
+
+                <CFormInput
+                  className="ps-5"
+                  placeholder="Search Name / Phone"
+                  value={
+                    searchText
+                  }
+                  onChange={(e) =>
+                    setSearchText(
+                      e.target
+                        .value
+                    )
+                  }
+                />
+              </div>
+            </CCol>
+
+            <CCol md={4}>
+              <CFormSelect
+                value={
+                  statusFilter
+                }
+                onChange={(e) =>
+                  setStatusFilter(
+                    e.target
+                      .value
+                  )
+                }
+              >
+                <option value="ALL">
+                  All Status
+                </option>
+                <option value="SENT">
+                  Sent
+                </option>
+                <option value="DELIVERED">
+                  Delivered
+                </option>
+                <option value="READ">
+                  Read
+                </option>
+                <option value="FAILED">
+                  Failed
+                </option>
+              </CFormSelect>
+            </CCol>
+          </CRow>
+        </CCardBody>
+      </CCard>
+
+      {/* TABLE */}
+
+      <CCard className="border-0 shadow-sm">
+        <CCardBody>
+          {isLoading ? (
+            <div className="text-center py-5">
+              <CSpinner />
+            </div>
+          ) : (
+            <>
+              <CTable
+                hover
+                responsive
+                align="middle"
+              >
+                <CTableHead>
+                  <CTableRow>
+                    <CTableHeaderCell>
+                      Name
+                    </CTableHeaderCell>
+                    <CTableHeaderCell>
+                      Phone
+                    </CTableHeaderCell>
+                    <CTableHeaderCell>
+                      Status
+                    </CTableHeaderCell>
+                    <CTableHeaderCell>
+                      Purpose
+                    </CTableHeaderCell>
+                    <CTableHeaderCell>
+                      Failure
+                    </CTableHeaderCell>
+                    <CTableHeaderCell>
+                      Updated
+                    </CTableHeaderCell>
+                  </CTableRow>
+                </CTableHead>
+
+                <CTableBody>
+                  {filteredData.map(
+                    (
+                      item,
+                      index
+                    ) => (
+                      <CTableRow
+                        key={
+                          index
+                        }
+                      >
+                        <CTableDataCell>
+                          {
+                            item.name
+                          }
+                        </CTableDataCell>
+
+                        <CTableDataCell>
+                          {
+                            item.phone
+                          }
+                        </CTableDataCell>
+
+                        <CTableDataCell>
+                          <CBadge
+                            shape="rounded-pill"
+                            color={getStatusColor(
+                              item.status
+                            )}
+                          >
+                            {
+                              item.status
+                            }
+                          </CBadge>
+                        </CTableDataCell>
+
+                        <CTableDataCell>
+                          {
+                            item.messagePurpose
+                          }
+                        </CTableDataCell>
+
+                        <CTableDataCell>
+                          {item.failedReason ||
+                            "-"}
+                        </CTableDataCell>
+
+                        <CTableDataCell>
+                          {item.updateTime
+                            ? new Date(
+                                item.updateTime
+                              ).toLocaleString()
+                            : "-"}
+                        </CTableDataCell>
+                      </CTableRow>
+                    )
+                  )}
+                </CTableBody>
+              </CTable>
+
+              <div className="d-flex justify-content-between align-items-center mt-4">
+                <strong>
+                  Total :
+                  {" "}
+                  {pagination?.totalRecords ||
+                    0}
+                </strong>
+
+                <CPagination>
+                  <CPaginationItem
+                    disabled={
+                      !pagination?.hasPrevious
+                    }
+                    onClick={() =>
+                      setPage(
+                        page -
+                          1
+                      )
+                    }
+                  >
+                    Previous
+                  </CPaginationItem>
+
+                  <CPaginationItem active>
+                    {page + 1}
+                  </CPaginationItem>
+
+                  <CPaginationItem
+                    disabled={
+                      !pagination?.hasNext
+                    }
+                    onClick={() =>
+                      setPage(
+                        page +
+                          1
+                      )
+                    }
+                  >
+                    Next
+                  </CPaginationItem>
+                </CPagination>
+              </div>
+            </>
+          )}
+        </CCardBody>
+      </CCard>
+    </div>
+  );
+};
+
+export default Dashboard;
