@@ -42,3 +42,6 @@ body {
   border-color: #007bff !important; /* Border color */
   box-shadow: 0 0 0 0.2rem rgba(38, 143, 255, 0.25); /* Optional: glow effect */
 }
+.email-input::placeholder {
+  font-size: 17px;
+}

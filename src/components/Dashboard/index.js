@@ -46,6 +46,15 @@ ChartJS.register(
 );
 
 
+const campaigns = [
+  {"label": "All", "value": "upsc_orientation_april30"},
+  {"label": "upsc orientation may31", "value": "upsc_orientation_may31"},
+  {"label": "upsc orientation june30", "value": "upsc_orientation_june30"},
+  {"label": "upsc orientation july31", "value": "upsc_orientation_july31"},
+  {"label": "upsc orientation aug31", "value": "upsc_orientation_aug31"},
+]
+
+
 const Dashboard = () => {
   const CAMPAIGN_NAME =
     "upsc_orientation_may31";
@@ -67,8 +76,7 @@ const Dashboard = () => {
   const [searchText, setSearchText] =
     useState("");
 
-  const [statusFilter, setStatusFilter] =
-    useState("ALL");
+  const [statusFilter, setStatusFilter] = useState({"label": "All", "value": "ALL"})
 
   const [page, setPage] =
     useState(0);
@@ -394,7 +402,8 @@ const Dashboard = () => {
       <CCard className="border-0 shadow-sm mb-4">
         <CCardBody>
           <CRow className="g-3">
-            <CCol md={8}>
+            <CCol md={6}>
+              
               <div className="position-relative">
                 <FaSearch
                   style={{
@@ -409,6 +418,7 @@ const Dashboard = () => {
 
                 <CFormInput
                   className="ps-5"
+                  style={{width:"100%", height:"40px"}}
                   placeholder="Search Name / Phone"
                   value={
                     searchText
@@ -420,13 +430,34 @@ const Dashboard = () => {
                     )
                   }
                 />
+
               </div>
             </CCol>
 
-            <CCol md={4}>
+            <CCol md={3}>
               <CFormSelect
                 value={
                   statusFilter
+                }
+                onChange={(e) =>
+                  setStatusFilter(
+                    e.target
+                      .value
+                  )
+                }
+                options={campaigns}
+              >
+                
+              </CFormSelect>
+            </CCol>
+          
+          
+          
+          
+            <CCol md={3}>
+              <CFormSelect
+                value={
+                  statusFilter?.value
                 }
                 onChange={(e) =>
                   setStatusFilter(
@@ -452,7 +483,11 @@ const Dashboard = () => {
                 </option>
               </CFormSelect>
             </CCol>
+          
+          
           </CRow>
+        
+        
         </CCardBody>
       </CCard>
 

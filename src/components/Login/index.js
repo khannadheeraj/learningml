@@ -14,6 +14,7 @@ import {
     CImage,
     CSpinner
 } from '@coreui/react';
+import "./styles.css";
 
 
 import {
@@ -351,14 +352,14 @@ const Login = () => {
                                                 </label>
 
                                                 <div className="position-relative">
-
                                                     <CFormInput
                                                         type="email"
                                                         name="email"
-                                                        placeholder="Enter your email address"
+                                                        placeholder="Enter your email address.."
                                                         value={formValues.email}
                                                         onChange={handleChange}
                                                         size="lg"
+                                                        className="email-input"
                                                         style={{
                                                             borderRadius: '12px',
                                                             height: '52px',
@@ -366,7 +367,6 @@ const Login = () => {
                                                             boxShadow: 'none'
                                                         }}
                                                     />
-
                                                 </div>
 
                                                 {
@@ -394,9 +394,10 @@ const Login = () => {
                                                     <CFormInput
                                                         type={showPassword ? 'text' : 'password'}
                                                         name="password"
-                                                        placeholder="Enter your password"
+                                                        placeholder="Enter your password.."
                                                         value={formValues.password}
                                                         onChange={handleChange}
+                                                        className="email-input"
                                                         size="lg"
                                                         style={{
                                                             borderRadius: '12px',

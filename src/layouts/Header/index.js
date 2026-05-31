@@ -23,9 +23,9 @@ const Header = ({ sidebarShow, setSidebarShow }) => {
             <h5 className="mb-0" style={{ color: "white" }}>WhatsApp Campaign</h5>
           </CHeaderBrand>
         </div>
-        <SearchBar />
+        {/* <SearchBar /> */}
         <div className="d-flex align-items-center gap-4">
-          <Notification />
+          {/* <Notification /> */}
           <ProfileDropdown />
         </div>
       </CContainer>
