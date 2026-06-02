@@ -194,95 +194,116 @@ export default function SendInvitationDashboard() {
   }
 
   return (
-    <main className="">
-     
-     <section className="dashboard-card">
-        <header className="dashboard-header">
-          <div>
-            <p className="eyebrow">Invitation</p>
-            <h1>Send invitation</h1>
-            <p>Select uploaded users and send campaign invitations.</p>
-          </div>
-          <a className="secondary-link" href="upload-contacts">
-            Upload contacts
-          </a>
-        </header>
+    <main className="app-shell">
 
-        <div className="toolbar-row">
-          <label className="field-group">
-            <span>Campaign Name</span>
-            <select
-              value={selectedCampaign}
-              // options={campaigns.map((campaign) => ({
-              //   label: campaign.name,
-              //   value: campaign.id,
-              // }))}
-              onChange={(event) => setSelectedCampaign(event.target.value)}
-            >
-              <option value="">Select campaign</option>
-              {campaigns.map((campaign) => (
-                <option key={campaign.id} value={campaign.id}>
-                  {campaign.name}
-                </option>
-              ))}
-            </select>
-          </label>
+      <section className="invitation-card">
+        {/* Header */}
+        <div className="invitation-header">
+          <div className="header-content">
+            <span className="header-badge">📧 Invitations</span>
+            <h1 className="header-title">Send Campaign Invitations</h1>
+            <p className="header-description">Select uploaded contacts and send invitations to your campaign participants.</p>
+          </div>
+          <a className="header-link" href="upload-contacts" title="Upload more contacts">
+            <span className="link-icon">+</span>
+            Upload Contacts
+          </a>
+        </div>
+
+        {/* Toolbar */}
+        <div className="invitation-toolbar">
+          <div className="toolbar-left">
+            <label className="form-group">
+              <span className="form-label">Campaign</span>
+              <select
+                value={selectedCampaign}
+                onChange={(event) => setSelectedCampaign(event.target.value)}
+                className="form-select"
+              >
+                <option value="">Select a campaign...</option>
+                {campaigns.map((campaign) => (
+                  <option key={campaign.id} value={campaign.id}>
+                    {campaign.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
 
           <button
             type="button"
-            className="primary-button"
+            className="btn btn-primary"
             disabled={isSending || !selectedCampaign || !selectedUsers.length}
             onClick={handleSendInvitation}
           >
-            {isSending ? "Sending..." : "Send Invitation"}
+            {isSending ? (
+              <>
+                <span className="spinner" />
+                Sending...
+              </>
+            ) : (
+              <>✓ Send Invitations</>
+            )}
           </button>
         </div>
 
-        {message && <p className="status-message">{message}</p>}
+        {/* Status Message */}
+        {message && (
+          <div className={`status-alert ${selectedUsers.length > 0 && message.includes('sent') ? 'success' : 'info'}`}>
+            <span className="alert-icon">ℹ️</span>
+            <p>{message}</p>
+          </div>
+        )}
 
-        <div className="data-table-wrap">
-          <table>
+        {/* Data Table */}
+        <div className="table-container">
+          <table className="data-table">
             <thead>
               <tr>
-                <th className="checkbox-cell">
+                <th className="col-checkbox">
                   <input
                     type="checkbox"
                     checked={allUsersSelected}
                     onChange={(event) => toggleSelectAllUsers(event.target.checked)}
+                    title={allUsersSelected ? 'Deselect all' : 'Select all'}
                   />
                 </th>
-                <th>Username</th>
-                <th>Phone Number</th>
+                <th className="col-username">Username</th>
+                <th className="col-phone">Phone Number</th>
               </tr>
             </thead>
             <tbody>
               {isLoading ? (
                 <tr>
-                  <td colSpan="3" className="empty-cell">
-                    Loading users...
+                  <td colSpan="3" className="table-empty">
+                    <span className="loading-text">Loading contacts...</span>
                   </td>
                 </tr>
               ) : currentPageUsers.length ? (
                 currentPageUsers.map((user) => (
                   <tr
                     key={user.id}
-                    className={selectedUserIds.includes(user.id) ? "is-selected" : ""}
+                    className={`table-row ${selectedUserIds.includes(user.id) ? 'is-selected' : ''}`}
                   >
-                    <td className="checkbox-cell">
+                    <td className="col-checkbox">
                       <input
                         type="checkbox"
                         checked={selectedUserIds.includes(user.id)}
                         onChange={(event) => toggleUser(user.id, event.target.checked)}
                       />
                     </td>
-                    <td>{user.username || "-"}</td>
-                    <td>{user.phoneNumber || "-"}</td>
+                    <td className="col-username">
+                      <span className="user-name">{user.username || '—'}</span>
+                    </td>
+                    <td className="col-phone">
+                      <span className="phone-number">{user.phoneNumber || '—'}</span>
+                    </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="3" className="empty-cell">
-                    No uploaded users found.
+                  <td colSpan="3" className="table-empty">
+                    <span className="empty-text">No contacts found. <a href="upload-contacts">Upload some contacts</a></span>
                   </td>
                 </tr>
               )}
@@ -290,26 +311,37 @@ export default function SendInvitationDashboard() {
           </table>
         </div>
 
-        <footer className="pagination-row">
-          <span>
-            {selectedUsers.length} selected from {users.length} users
-          </span>
-          <div className="pagination-actions">
-            <button type="button" disabled={page === 1} onClick={() => goToPage(page - 1)}>
-              Previous
-            </button>
-            <strong>
-              Page {page} of {totalPages}
-            </strong>
+        {/* Pagination */}
+        <div className="invitation-footer">
+          <div className="selection-info">
+            <span className="info-text">
+              <strong>{selectedUsers.length}</strong> selected from <strong>{users.length}</strong> contacts
+            </span>
+          </div>
+          <div className="pagination-controls">
             <button
               type="button"
+              className="pagination-btn"
+              disabled={page === 1}
+              onClick={() => goToPage(page - 1)}
+              title="Previous page"
+            >
+              ← Previous
+            </button>
+            <span className="pagination-info">
+              Page <strong>{page}</strong> of <strong>{totalPages}</strong>
+            </span>
+            <button
+              type="button"
+              className="pagination-btn"
               disabled={page === totalPages}
               onClick={() => goToPage(page + 1)}
+              title="Next page"
             >
-              Next
+              Next →
             </button>
           </div>
-        </footer>
+        </div>
       </section>
     </main>
   );

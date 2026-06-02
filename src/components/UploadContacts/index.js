@@ -162,7 +162,7 @@ export default function UploadContacts() {
   }
 
   return (
-    <main className="app-shell">
+    <main className="app-shell" >
       <section className="upload-panel">
         <div className="panel-copy">
           <p className="eyebrow">Contacts Import</p>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { CDropdown, CDropdownToggle, CDropdownMenu, CDropdownItem } from '@coreui/react';
-import { cilAccountLogout, cilBell, cilCommentSquare, cilCreditCard, cilEnvelopeOpen, cilFile, cilSettings, cilTask, cilUser } from '@coreui/icons';
+import { cilAccountLogout, cilEnvelopeOpen, cilSettings, cilUser } from '@coreui/icons';
 import { CBadge, CDropdownDivider, CDropdownHeader } from '@coreui/react-pro';
 import CIcon from '@coreui/icons-react';
 import { auth_service } from '../../auth/auth';
@@ -18,7 +18,7 @@ const ProfileDropdown = () => {
             items: []
         },
         {
-            header: 'Settings',
+            // header: 'Settings',
             items: [
                 {
                     label: 'Profile',

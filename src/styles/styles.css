@@ -1,55 +1,357 @@
 /* Header styles */
 .app-header {
-  background-color: #0c4b61; /* Deep teal for a sleek and professional feel */
-  height: 64px;
-  border-bottom: 1px solid #4b7b84; /* Darker teal for subtle separation */
+  background: linear-gradient(135deg, rgba(7, 30, 49, 0.96) 0%, rgba(12, 50, 75, 0.96) 100%);
+  backdrop-filter: blur(12px);
+  height: 72px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   z-index: 1100;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
 }
 
-/* Sidebar styles */
-.custom-sidebar {
-  background-color: #f4f9f9; /* Light, slightly warm grayish-blue for a modern feel */
-  border-right: 1px solid #d0d8e1; /* Light neutral gray border for subtle separation */
-  width: 240px;
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+.modern-header {
+  padding: 12px 0;
 }
 
-/* Sidebar navigation links */
-.custom-sidebar .nav-link {
-  padding: 12px 20px;
+.header-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  height: 100%;
+}
+
+.header-section {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.header-left {
+  flex: 0 0 auto;
+}
+
+.header-center {
+  flex: 1 1 auto;
+  justify-content: center;
+}
+
+.header-right {
+  flex: 0 0 auto;
+  gap: 16px;
+}
+
+/* Brand Logo and Text */
+.logo-text {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #ffffff;
+}
+
+.brand-icon {
+  font-size: 24px;
+  line-height: 1;
+}
+
+.brand-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.brand-title {
+  color: #ffffff;
   font-size: 15px;
+  font-weight: 800;
+}
+
+.brand-subtitle {
+  color: #9cc5e5;
+  font-size: 12px;
+  letter-spacing: 0.03em;
   font-weight: 500;
-  color: #1a2a3f; /* Dark slate for the text to provide sharp contrast */
-  border-radius: 8px;
-  margin: 4px 12px;
-  transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* Hamburger Toggle */
+.modern-toggler {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 10px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  transition: all 180ms ease;
+  cursor: pointer;
+  outline: none;
+}
+
+.modern-toggler:hover {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.modern-toggler .toggler-line {
+  display: block;
+  width: 16px;
+  height: 2px;
+  background: #ffffff;
+  border-radius: 2px;
+  transition: all 200ms ease;
+  margin: 2px 0;
+}
+
+.modern-toggler.open .toggler-line:nth-child(1) {
+  transform: translateY(6px) rotate(45deg);
+}
+
+.modern-toggler.open .toggler-line:nth-child(2) {
+  opacity: 0;
+  transform: translateX(-4px);
+}
+
+.modern-toggler.open .toggler-line:nth-child(3) {
+  transform: translateY(-6px) rotate(-45deg);
+}
+
+/* Breadcrumb Navigation */
+.breadcrumb-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.breadcrumb-item {
+  color: #9cc5e5;
+  transition: color 180ms ease;
+}
+
+.breadcrumb-item:hover {
+  color: #ffffff;
+}
+
+.breadcrumb-item.active {
+  color: #3ab7ff;
+  font-weight: 700;
+}
+
+.breadcrumb-separator {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+/* Search Bar */
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  transition: all 180ms ease;
+  min-width: 240px;
+}
+
+.search-bar.active {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(58, 183, 255, 0.3);
+  box-shadow: 0 0 0 2px rgba(58, 183, 255, 0.1);
+}
+
+.search-icon {
+  color: #9cc5e5;
+  font-size: 14px;
+}
+
+.search-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 500;
+  outline: none;
+  padding: 0;
+}
+
+.search-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.search-clear {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  font-size: 16px;
+  padding: 0;
+  transition: color 180ms ease;
+}
+
+.search-clear:hover {
+  color: #ffffff;
+}
+
+/* Header Actions */
+.header-action {
   display: flex;
   align-items: center;
 }
 
-/* Sidebar navigation link hover */
+.action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 180ms ease;
+  position: relative;
+  outline: none;
+}
+
+.action-btn:hover {
+  background: rgba(255, 255, 255, 0.14);
+  transform: translateY(-2px);
+}
+
+.notification-icon {
+  position: relative;
+}
+
+.notification-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* Profile Section */
+.profile-section {
+  margin-left: 8px;
+}
+
+/* Sidebar styles */
+.custom-sidebar {
+  background: linear-gradient(180deg, #091726 0%, #0f2f4a 100%);
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  width: 260px;
+  min-width: 260px;
+  box-shadow: 3px 0 18px rgba(0, 0, 0, 0.14);
+  padding-top: 22px;
+  color: #eef7ff;
+  position: fixed;
+  top: 72px;
+  bottom: 0;
+  height: calc(100vh - 72px);
+  overflow: hidden;
+}
+
+.custom-sidebar .simplebar-wrapper,
+.custom-sidebar .simplebar-content,
+.custom-sidebar .simplebar-content-wrapper {
+  height: 100%;
+}
+
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 0 18px 20px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.brand-avatar {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 16px;
+  color: #ffffff;
+  background: linear-gradient(135deg, #3ab7ff 0%, #1d6fb8 100%);
+  font-weight: 800;
+  font-size: 16px;
+}
+
+.brand-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.brand-name {
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 15px;
+}
+
+.brand-subtitle {
+  color: #9bc9e9;
+  font-size: 12px;
+  letter-spacing: 0.01em;
+}
+
+.custom-sidebar .simplebar-content {
+  padding: 0 0 20px;
+}
+
+.custom-sidebar .nav-link {
+  padding: 12px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #dfe9f5;
+  border-radius: 14px;
+  margin: 0 12px 8px;
+  transition: background 180ms ease, color 180ms ease, transform 180ms ease;
+  display: flex;
+  align-items: center;
+}
+
 .custom-sidebar .nav-link:hover {
-  background-color: #ff6f61; /* Coral color for a vibrant hover effect */
-  color: white; /* White text on hover for contrast */
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
 }
 
-/* Sidebar navigation link active */
 .custom-sidebar .nav-link.active {
-  background-color: #ff6f61; /* Active link color */
-  color: white; /* White text on active */
+  background-color: rgba(255, 255, 255, 0.14);
+  color: #ffffff;
+  box-shadow: inset 4px 0 0 #3ab7ff;
 }
 
-/* Sidebar icons */
 .nav-icon {
-  margin-right: 10px;
+  margin-right: 12px;
   font-size: 18px;
-  color: #1a2a3f; /* Icon color matches the nav text for consistency */
-  transition: color 0.3s ease;
+  color: #81c5ff;
+  transition: color 0.3s ease, transform 0.3s ease;
 }
 
-/* Sidebar icon hover */
 .nav-icon:hover {
-  color: #ff6f61; /* Change icon color on hover to match the link */
+  color: #ffffff;
+  transform: translateX(1px);
+}
+
+.custom-sidebar .nav-title,
+.modern-nav-title {
+  margin: 20px 18px 10px;
+  color: #8bb8d9;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
 }
 
 /* Search Bar */
@@ -95,3 +397,29 @@
   height: 100%;
   object-fit: cover;
 }
+
+html,
+body,
+#root {
+  min-height: 100%;
+  height: 100%;
+}
+
+body {
+  margin: 0;
+}
+
+.app-footer,
+.c-footer {
+  position: fixed !important;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+}
+
+/* Add bottom padding to wrapper to prevent content hiding behind footer */
+.pb-footer {
+  padding-bottom: 90px !important;
+}
+

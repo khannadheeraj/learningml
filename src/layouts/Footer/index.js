@@ -5,7 +5,7 @@ import { CFooter } from '@coreui/react'
 
 const Footer = () => {
   return (
-    <CFooter>
+    <CFooter className="app-footer">
       <div>
         <span className="ms-1">
           &copy; 2026 -{' '}

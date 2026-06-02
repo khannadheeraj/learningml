@@ -11,12 +11,12 @@ const DefaultLayout = () => {
         <div>
             <Header sidebarShow={sidebarShow} setSidebarShow={setSidebarShow} />
             <SideBar sidebarShow={sidebarShow} setSidebarShow={setSidebarShow} />
-            <div className="wrapper d-flex flex-column min-vh-90 wseInfratechBodyBG pt-3">
+            <div className="wrapper d-flex flex-column min-vh-100 wseInfratechBodyBG pt-3 pb-footer">
                 <div className="body flex-grow-1 px-3">
                     <MainlLayout />
                 </div>
-                <Footer />
             </div>
+            <Footer />
         </div>
     );
 };

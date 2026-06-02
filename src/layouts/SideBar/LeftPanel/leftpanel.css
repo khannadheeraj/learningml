@@ -1,0 +1,65 @@
+.modern-nav-title {
+  margin: 14px 18px 8px;
+  color: #89b9dd;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.modern-nav-item {
+  margin: 6px 12px;
+}
+
+.modern-nav-item .nav-link {
+  min-height: 48px;
+  padding: 0 14px;
+  border-radius: 14px;
+  color: #dce9f5;
+  font-weight: 700;
+  transition: background 180ms ease, color 180ms ease, transform 180ms ease;
+  display: flex;
+  align-items: center;
+}
+
+.modern-nav-item .nav-link:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateX(2px);
+}
+
+.modern-nav-item .nav-link.active {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.14);
+  box-shadow: inset 4px 0 0 #3ab7ff;
+}
+
+.modern-nav-icon {
+  display: inline-grid;
+  width: 34px;
+  height: 34px;
+  margin-right: 12px;
+  place-items: center;
+  border-radius: 12px;
+  color: #aedcff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.nav-label {
+  line-height: 1;
+}
+
+.modern-nav-icon {
+  display: inline-grid;
+  width: 34px;
+  height: 34px;
+  margin-right: 12px;
+  place-items: center;
+  border-radius: 8px;
+  color: #0c4b61;
+  background: #eef8fb;
+}
+
+.nav-label {
+  line-height: 1;
+}

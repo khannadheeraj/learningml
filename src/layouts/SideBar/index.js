@@ -13,6 +13,13 @@ const SideBar = ({ sidebarShow, setSidebarShow }) => {
       onVisibleChange={(visible) => setSidebarShow(visible)}
       className="custom-sidebar"
     >
+      <div className="sidebar-brand">
+        <div className="brand-avatar">LM</div>
+        <div className="brand-content">
+          <div className="brand-name">LearningML</div>
+          <div className="brand-subtitle">Modern analytics dashboard</div>
+        </div>
+      </div>
       <CSidebarNav>
         <SimpleBar>
           <SideBarNav items={navigation} />

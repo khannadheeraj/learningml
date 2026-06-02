@@ -63,9 +63,10 @@ p {
 
 .app-shell {
   display: grid;
-  min-height: 90vh;
+  min-height: 85vh;
   place-items: center;
   padding: 32px 16px;
+  padding-top: 0px;
 }
 
 .upload-panel {
