@@ -1,0 +1,278 @@
+import { useRef, useState } from "react";
+import * as XLSX from "xlsx";
+import "./uploadContacts.css";
+
+const USERNAME_KEYS = ["username", "user", "name", "fullname", "contactname"];
+const PHONE_KEYS = [
+  "phonenumber",
+  "phone",
+  "mobile",
+  "mobilenumber",
+  "contactnumber",
+  "number",
+];
+
+function normalizeKey(key) {
+  return String(key).toLowerCase().replace(/[^a-z0-9]/g, "");
+}
+
+function findCell(row, acceptedKeys) {
+  const matchedKey = Object.keys(row).find((key) =>
+    acceptedKeys.includes(normalizeKey(key))
+  );
+
+  return matchedKey ? String(row[matchedKey] ?? "").trim() : "";
+}
+
+function formatRows(sheetRows) {
+  return sheetRows
+    .map((row, index) => ({
+      id: `contact-${index}`,
+      username: findCell(row, USERNAME_KEYS),
+      phoneNumber: findCell(row, PHONE_KEYS),
+    }))
+    .filter((row) => row.username || row.phoneNumber);
+}
+
+export default function UploadContacts() {
+  const fileInputRef = useRef(null);
+  const [contacts, setContacts] = useState([]);
+  const [selectedIds, setSelectedIds] = useState([]);
+  const [fileName, setFileName] = useState("");
+  const [isDragging, setIsDragging] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [error, setError] = useState("");
+
+  const selectedCount = selectedIds.length;
+  const allSelected = contacts.length > 0 && selectedCount === contacts.length;
+  const uploadStatus = contacts.length
+    ? `${contacts.length} contact${contacts.length === 1 ? "" : "s"} ready`
+    : "Waiting for upload";
+
+  async function handleFile(file) {
+    setError("");
+
+    if (!file) {
+      return;
+    }
+
+    if (!/\.(csv|xlsx|xls)$/i.test(file.name)) {
+      setContacts([]);
+      setSelectedIds([]);
+      setFileName("");
+      setError("Please upload only CSV, XLSX, or XLS files.");
+      return;
+    }
+
+    try {
+      const buffer = await file.arrayBuffer();
+      const workbook = XLSX.read(buffer, { type: "array" });
+      const firstSheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[firstSheetName];
+      const rows = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
+      const nextContacts = formatRows(rows);
+
+      setContacts(nextContacts);
+      setSelectedIds([]);
+      setFileName(file.name);
+
+      if (!nextContacts.length) {
+        setError(
+          "No username or phone number data found. Use columns like Username and Phone Number."
+        );
+      }
+    } catch {
+      setContacts([]);
+      setSelectedIds([]);
+      setFileName("");
+      setError("Could not read this file. Please try another CSV/XLSX file.");
+    }
+  }
+
+  function toggleSelectAll(checked) {
+    setSelectedIds(checked ? contacts.map((contact) => contact.id) : []);
+  }
+
+  function toggleContact(id, checked) {
+    setSelectedIds((current) =>
+      checked ? [...current, id] : current.filter((selectedId) => selectedId !== id)
+    );
+  }
+
+  function openPicker() {
+    fileInputRef.current?.click();
+  }
+
+  return (
+    <main className="app-shell">
+      <section className="upload-panel">
+        <div className="panel-copy">
+          <p className="eyebrow">Contacts Import</p>
+          <h3>Upload CSV or XLSX contacts</h3>
+          <p>
+            Drop your file here, then click Show to review usernames and phone
+            numbers in a selectable popup table.
+          </p>
+        </div>
+
+        <div
+          className={`drop-zone${isDragging ? " is-dragging" : ""}`}
+          role="button"
+          tabIndex={0}
+          onClick={openPicker}
+          onKeyDown={(event) => {
+            if (event.key === "Enter" || event.key === " ") {
+              openPicker();
+            }
+          }}
+          onDragEnter={(event) => {
+            event.preventDefault();
+            setIsDragging(true);
+          }}
+          onDragOver={(event) => {
+            event.preventDefault();
+            setIsDragging(true);
+          }}
+          onDragLeave={() => setIsDragging(false)}
+          onDrop={(event) => {
+            event.preventDefault();
+            setIsDragging(false);
+            handleFile(event.dataTransfer.files?.[0]);
+          }}
+        >
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".csv,.xlsx,.xls"
+            onChange={(event) => handleFile(event.target.files?.[0])}
+          />
+          <div className="upload-visual">
+            <span className="upload-icon">+</span>
+          </div>
+          <div className="drop-copy">
+            <strong>Drag and drop file here</strong>
+            <small>or click to upload CSV, XLSX, or XLS</small>
+          </div>
+          {fileName && (
+            <div className="file-preview">
+              <span className="file-type">File</span>
+              <span className="file-name">{fileName}</span>
+            </div>
+          )}
+        </div>
+
+        {error && <p className="error-text">{error}</p>}
+
+        <div className="actions">
+          <button
+            type="button"
+            className="primary-button"
+            disabled={!contacts.length}
+            onClick={() => setIsModalOpen(true)}
+          >
+            Show
+          </button>
+          <span className="upload-status">{uploadStatus}</span>
+        </div>
+      </section>
+
+      {isModalOpen && (
+        <div
+          className="modal-backdrop"
+          role="presentation"
+          onClick={() => setIsModalOpen(false)}
+        >
+          <section
+            className="modal-card"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="contacts-modal-title"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <header className="modal-header">
+              <div className="modal-title-block">
+                <p className="eyebrow">Uploaded Data</p>
+                <h2 id="contacts-modal-title">Select contacts</h2>
+                <span>
+                  Choose one or more contacts from the uploaded file.
+                </span>
+              </div>
+              <button
+                type="button"
+                className="icon-button"
+                aria-label="Close popup"
+                onClick={() => setIsModalOpen(false)}
+              >
+                x
+              </button>
+            </header>
+
+            <div className="modal-summary">
+              <div>
+                <strong>{contacts.length}</strong>
+                <span>Total contacts</span>
+              </div>
+              <div>
+                <strong>{selectedCount}</strong>
+                <span>Selected</span>
+              </div>
+              <label className="select-all-control">
+                <input
+                  type="checkbox"
+                  checked={allSelected}
+                  onChange={(event) => toggleSelectAll(event.target.checked)}
+                />
+                Select all
+              </label>
+            </div>
+
+            <div className="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th className="checkbox-cell">
+                      <input
+                        type="checkbox"
+                        checked={allSelected}
+                        onChange={(event) => toggleSelectAll(event.target.checked)}
+                      />
+                    </th>
+                    <th>Username</th>
+                    <th>Phone Number</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {contacts.map((contact) => (
+                    <tr
+                      key={contact.id}
+                      className={selectedIds.includes(contact.id) ? "is-selected" : ""}
+                    >
+                      <td className="checkbox-cell">
+                        <input
+                          type="checkbox"
+                          checked={selectedIds.includes(contact.id)}
+                          onChange={(event) =>
+                            toggleContact(contact.id, event.target.checked)
+                          }
+                        />
+                      </td>
+                      <td>{contact.username || "-"}</td>
+                      <td>{contact.phoneNumber || "-"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <footer className="modal-footer">
+              <span>{selectedCount} selected from {contacts.length} uploaded contacts</span>
+              <button type="button" onClick={() => setIsModalOpen(false)}>
+                Done
+              </button>
+            </footer>
+          </section>
+        </div>
+      )}
+    </main>
+  );
+}
