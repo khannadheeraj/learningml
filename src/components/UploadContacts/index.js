@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import axios from "axios";
 import * as XLSX from "xlsx";
 import "./uploadContacts.css";
 
@@ -11,6 +12,7 @@ const PHONE_KEYS = [
   "contactnumber",
   "number",
 ];
+const UPLOAD_CONTACTS_API = process.env.REACT_APP_recommendServiceURL;
 
 function normalizeKey(key) {
   return String(key).toLowerCase().replace(/[^a-z0-9]/g, "");
@@ -42,6 +44,9 @@ export default function UploadContacts() {
   const [isDragging, setIsDragging] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [error, setError] = useState("");
+  const [uploadUsers, setUploadUsers] = useState([]);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadMessage, setUploadMessage] = useState("");
 
   const selectedCount = selectedIds.length;
   const allSelected = contacts.length > 0 && selectedCount === contacts.length;
@@ -59,7 +64,9 @@ export default function UploadContacts() {
     if (!/\.(csv|xlsx|xls)$/i.test(file.name)) {
       setContacts([]);
       setSelectedIds([]);
+      setUploadUsers([]);
       setFileName("");
+      setUploadMessage("");
       setError("Please upload only CSV, XLSX, or XLS files.");
       return;
     }
@@ -74,7 +81,9 @@ export default function UploadContacts() {
 
       setContacts(nextContacts);
       setSelectedIds([]);
+      setUploadUsers([]);
       setFileName(file.name);
+      setUploadMessage("");
 
       if (!nextContacts.length) {
         setError(
@@ -84,23 +93,64 @@ export default function UploadContacts() {
     } catch {
       setContacts([]);
       setSelectedIds([]);
+      setUploadUsers([]);
       setFileName("");
+      setUploadMessage("");
       setError("Could not read this file. Please try another CSV/XLSX file.");
     }
   }
 
   function toggleSelectAll(checked) {
+    setUploadMessage("");
     setSelectedIds(checked ? contacts.map((contact) => contact.id) : []);
+    setUploadUsers(checked ? contacts : []);
   }
 
   function toggleContact(id, checked) {
-    setSelectedIds((current) =>
-      checked ? [...current, id] : current.filter((selectedId) => selectedId !== id)
-    );
+    setUploadMessage("");
+    setSelectedIds((current) => {
+      const nextIds = checked
+        ? Array.from(new Set([...current, id]))
+        : current.filter((selectedId) => selectedId !== id);
+
+      setUploadUsers(contacts.filter((contact) => nextIds.includes(contact.id)));
+      return nextIds;
+    });
   }
 
   function openPicker() {
     fileInputRef.current?.click();
+  }
+
+  async function handleUploadUsers() {
+    if (!uploadUsers.length) {
+      setUploadMessage("Please select at least one contact.");
+      return;
+    }
+
+    const payload = {
+      users: uploadUsers.map(({ username, phoneNumber }) => ({
+        username,
+        phoneNumber,
+      })),
+    };
+
+    try {
+      setIsUploading(true);
+      setUploadMessage("");
+
+      await axios.post(`${UPLOAD_CONTACTS_API}/upload-bulk-users`, payload, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      setUploadMessage(`${uploadUsers.length} contact(s) uploaded successfully.`);
+    } catch {
+      setUploadMessage("Could not upload contacts. Please try again.");
+    } finally {
+      setIsUploading(false);
+    }
   }
 
   return (
@@ -265,9 +315,18 @@ export default function UploadContacts() {
             </div>
 
             <footer className="modal-footer">
-              <span>{selectedCount} selected from {contacts.length} uploaded contacts</span>
-              <button type="button" onClick={() => setIsModalOpen(false)}>
-                Done
+              <div className="modal-footer-copy">
+                <span>
+                  {selectedCount} selected from {contacts.length} uploaded contacts
+                </span>
+                {uploadMessage && <small>{uploadMessage}</small>}
+              </div>
+              <button
+                type="button"
+                disabled={!uploadUsers.length || isUploading}
+                onClick={handleUploadUsers}
+              >
+                {isUploading ? "Uploading..." : "Upload"}
               </button>
             </footer>
           </section>

@@ -18,7 +18,7 @@ const menuList = [
 
   createNavItem( 'Invitation', '/send-invitation', FaPaperPlane),
 
-  createNavItem('Test Invitations', '/test-send-invitation', FaPaperPlane)
+  // createNavItem('Test Invitations', '/test-send-invitation', FaPaperPlane)
 
 
   // createNavItem('Logout', '/logout', FaSignOutAlt),

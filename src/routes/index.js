@@ -14,7 +14,7 @@ const routes = [
     { path: '/logout', name: 'Logout', element: <LogOut /> },
     { path: '/upload-contacts', name: 'Upload Contacts', element: <UploadContacts /> },
     { path: '/send-invitation', name: 'Send Invitation', element: <SendInvitationDashboard /> },
-     { path: '/test-send-invitation', name: 'Test Send Invitation', element: <TestSendInvitation /> },
+    //  { path: '/test-send-invitation', name: 'Test Send Invitation', element: <TestSendInvitation /> },
 
 ]
 
