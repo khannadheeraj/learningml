@@ -175,328 +175,168 @@ const Login = () => {
 
     return (
 
-        <div
-            className="min-vh-100 d-flex align-items-center justify-content-center position-relative overflow-hidden"
-            style={{
-                background:
-                    'linear-gradient(135deg, #0f2027, #203a43, #2c5364)'
-            }}
-        >
+        <div className="login-page min-vh-100 d-flex align-items-center justify-content-center position-relative overflow-hidden">
 
-            {/* Background Blur Circle */}
-            <div
-                style={{
-                    position: 'absolute',
-                    width: '350px',
-                    height: '350px',
-                    borderRadius: '50%',
-                    background: 'rgba(37,211,102,0.18)',
-                    top: '-100px',
-                    right: '-100px',
-                    filter: 'blur(40px)'
-                }}
-            />
-
-            <div
-                style={{
-                    position: 'absolute',
-                    width: '300px',
-                    height: '300px',
-                    borderRadius: '50%',
-                    background: 'rgba(255,255,255,0.08)',
-                    bottom: '-100px',
-                    left: '-100px',
-                    filter: 'blur(50px)'
-                }}
-            />
+            <div className="background-glow background-glow-top" />
+            <div className="background-glow background-glow-bottom" />
 
             <CContainer>
 
                 <CRow className="justify-content-center">
 
-                    <CCol
-                        xl={10}
-                        lg={11}
-                    >
+                    <CCol xl={10} lg={11}>
 
-                        <CCard
-                            className="border-0 shadow-lg overflow-hidden"
-                            style={{
-                                borderRadius: '28px',
-                                background: 'rgba(255,255,255,0.08)',
-                                backdropFilter: 'blur(20px)',
-                                WebkitBackdropFilter: 'blur(20px)'
-                            }}
-                        >
+                        <CCard className="login-card border-0 shadow-lg overflow-hidden">
 
                             <CRow className="g-0">
 
-                                {/* =========================================================
-                                    Left Side Banner
-                                ========================================================= */}
-
                                 <CCol
                                     md={6}
-                                    className="d-none d-md-flex flex-column justify-content-center align-items-center text-white p-5 position-relative"
-                                    style={{
-                                        background:
-                                            'linear-gradient(180deg, #25D366 0%, #128C7E 100%)'
-                                    }}
+                                    className="login-hero-panel d-none d-md-flex flex-column justify-content-center align-items-start text-white p-5 position-relative"
                                 >
+
+                                    <div className="hero-badge mb-4">Secure workspace</div>
 
                                     <CImage
                                         src="https://img.freepik.com/free-vector/mobile-marketing-concept-illustration_114360-1497.jpg"
                                         alt="WhatsApp Campaign Dashboard"
-                                        className="img-fluid mb-4"
-                                        style={{
-                                            maxHeight: '300px',
-                                            objectFit: 'contain'
-                                        }}
+                                        className="login-illustration mb-4"
                                     />
 
-                                    <h2
-                                        className="fw-bold text-center mb-3"
-                                    >
+                                    <h2 className="hero-title fw-bold mb-3">
                                         WhatsApp Campaign Dashboard
                                     </h2>
 
-                                    <p
-                                        className="text-center opacity-75"
-                                        style={{
-                                            maxWidth: '420px',
-                                            lineHeight: '28px'
-                                        }}
-                                    >
-                                        Manage campaigns, automate messaging,
-                                        monitor delivery reports and grow your
-                                        business communication with powerful
-                                        WhatsApp marketing tools.
+                                    <p className="hero-copy mb-4">
+                                        Launch campaigns, automate messaging and monitor delivery performance from one modern workspace.
                                     </p>
+
+                                    <ul className="hero-features list-unstyled mb-0">
+                                        <li>Real-time campaign analytics</li>
+                                        <li>Automated message flows</li>
+                                        <li>Clean contact management</li>
+                                    </ul>
 
                                 </CCol>
 
-
-                                {/* =========================================================
-                                    Right Side Login Form
-                                ========================================================= */}
-
                                 <CCol
                                     md={6}
-                                    className="bg-white d-flex align-items-center"
+                                    className="login-form-panel d-flex align-items-center"
                                 >
 
                                     <CCardBody className="p-4 p-lg-5">
 
-                                        {/* Logo */}
-
                                         <div className="text-center mb-4">
 
-                                            <div
-                                                className="d-inline-flex align-items-center justify-content-center rounded-circle shadow-sm"
-                                                style={{
-                                                    width: '100px',
-                                                    height: '100px',
-                                                    background: '#25D366'
-                                                }}
-                                            >
+                                            <div className="login-logo-wrapper mb-3">
 
                                                 <CImage
                                                     src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg"
                                                     alt="WhatsApp"
-                                                    style={{
-                                                        width: '55px',
-                                                        height: '55px'
-                                                    }}
+                                                    className="login-logo"
                                                 />
 
                                             </div>
 
-                                        </div>
-
-
-                                        {/* Heading */}
-
-                                        <div className="text-center mb-4">
-
-                                            <h2 className="fw-bold mb-2">
-                                                Welcome Back
-                                            </h2>
-
-                                            <p className="text-medium-emphasis">
-                                                Sign in to continue to your dashboard
+                                            <h2 className="fw-bold mb-2">Welcome Back</h2>
+                                            <p className="text-secondary mb-0">
+                                                Sign in to access your campaign analytics and messaging suite.
                                             </p>
 
                                         </div>
 
+                                        {errors?.common && (
+                                            <div className="alert alert-danger text-center py-2">
+                                                {errors?.common}
+                                            </div>
+                                        )}
 
-                                        {/* Error */}
-
-                                        {
-                                            errors?.common && (
-                                                <div
-                                                    className="alert alert-danger text-center py-2"
-                                                >
-                                                    {errors?.common}
-                                                </div>
-                                            )
-                                        }
                                         <CForm onSubmit={handleSubmit}>
 
-                                            {/* Email */}
-
                                             <div className="mb-4">
-
-                                                <label className="form-label fw-semibold text-dark">
+                                                <label className="form-label fw-semibold text-dark d-block mb-2">
                                                     Email Address
                                                     <span className="text-danger ms-1">*</span>
                                                 </label>
 
-                                                <div className="position-relative">
-                                                    <CFormInput
-                                                        type="email"
-                                                        name="email"
-                                                        placeholder="Enter your email address.."
-                                                        value={formValues.email}
-                                                        onChange={handleChange}
-                                                        size="lg"
-                                                        className="email-input"
-                                                        style={{
-                                                            borderRadius: '12px',
-                                                            height: '52px',
-                                                            border: '1px solid #dcdcdc',
-                                                            boxShadow: 'none'
-                                                        }}
-                                                    />
-                                                </div>
+                                                <CFormInput
+                                                    type="email"
+                                                    name="email"
+                                                    placeholder="Enter your email address"
+                                                    value={formValues.email}
+                                                    onChange={handleChange}
+                                                    size="lg"
+                                                    className="login-input"
+                                                />
 
-                                                {
-                                                    errors?.email && (
-                                                        <small className="text-danger">
-                                                            {errors?.email}
-                                                        </small>
-                                                    )
-                                                }
-
+                                                {errors?.email && (
+                                                    <small className="text-danger">
+                                                        {errors?.email}
+                                                    </small>
+                                                )}
                                             </div>
 
-
-                                            {/* Password */}
-
                                             <div className="mb-4">
-
-                                                <label className="form-label fw-semibold text-dark">
+                                                <label className="form-label fw-semibold text-dark d-block mb-2">
                                                     Password
                                                     <span className="text-danger ms-1">*</span>
                                                 </label>
 
                                                 <div className="position-relative">
-
                                                     <CFormInput
                                                         type={showPassword ? 'text' : 'password'}
                                                         name="password"
-                                                        placeholder="Enter your password.."
+                                                        placeholder="Enter your password"
                                                         value={formValues.password}
                                                         onChange={handleChange}
-                                                        className="email-input"
+                                                        className="login-input"
                                                         size="lg"
-                                                        style={{
-                                                            borderRadius: '12px',
-                                                            height: '52px',
-                                                            border: '1px solid #dcdcdc',
-                                                            paddingRight: '55px',
-                                                            boxShadow: 'none'
-                                                        }}
                                                     />
-
-                                                    {/* Eye Toggle */}
 
                                                     <button
                                                         type="button"
-                                                        onClick={() =>
-                                                            setShowPassword(!showPassword)
-                                                        }
-                                                        className="border-0 bg-transparent position-absolute top-50 end-0 translate-middle-y pe-3"
+                                                        onClick={() => setShowPassword(!showPassword)}
+                                                        className="password-toggle-btn"
+                                                        aria-label={showPassword ? 'Hide password' : 'Show password'}
                                                     >
-
-                                                        {
-                                                            showPassword ? (
-                                                                <FaEyeSlash
-                                                                    size={18}
-                                                                    color="#6c757d"
-                                                                />
-                                                            ) : (
-                                                                <FaEye
-                                                                    size={18}
-                                                                    color="#6c757d"
-                                                                />
-                                                            )
-                                                        }
-
+                                                        {showPassword ? (
+                                                            <FaEyeSlash size={18} color="#6c757d" />
+                                                        ) : (
+                                                            <FaEye size={18} color="#6c757d" />
+                                                        )}
                                                     </button>
-
                                                 </div>
 
-                                                {
-                                                    errors?.password && (
-                                                        <small className="text-danger">
-                                                            {errors?.password}
-                                                        </small>
-                                                    )
-                                                }
-
+                                                {errors?.password && (
+                                                    <small className="text-danger">
+                                                        {errors?.password}
+                                                    </small>
+                                                )}
                                             </div>
-
-
-                                            {/* Login Button */}
 
                                             <CButton
                                                 type="submit"
                                                 size="lg"
-                                                className="w-100 fw-semibold border-0 shadow-sm"
+                                                className="login-btn w-100 fw-semibold"
                                                 disabled={isLoading}
-                                                style={{
-                                                    background:
-                                                        'linear-gradient(90deg, #25D366 0%, #128C7E 100%)',
-                                                    borderRadius: '14px',
-                                                    height: '54px',
-                                                    fontSize: '16px',
-                                                    letterSpacing: '0.5px'
-                                                }}
                                             >
-
-                                                {
-                                                    isLoading ? (
-                                                        <div className="d-flex align-items-center justify-content-center gap-2">
-
-                                                            <CSpinner
-                                                                size="sm"
-                                                                color="light"
-                                                            />
-
-                                                            <span>
-                                                                Signing In...
-                                                            </span>
-
-                                                        </div>
-                                                    ) : (
-                                                        'Login to Dashboard'
-                                                    )
-                                                }
-
+                                                {isLoading ? (
+                                                    <div className="d-flex align-items-center justify-content-center gap-2">
+                                                        <CSpinner size="sm" color="light" />
+                                                        <span>Signing In...</span>
+                                                    </div>
+                                                ) : (
+                                                    'Login to Dashboard'
+                                                )}
                                             </CButton>
 
                                         </CForm>
 
-                                        {/* Footer */}
-
                                         <div className="text-center mt-4">
-
-                                            <small className="text-medium-emphasis">
+                                            <small className="text-secondary">
                                                 © 2026 WhatsApp Campaign Dashboard
                                             </small>
-
                                         </div>
-
                                     </CCardBody>
 
                                 </CCol>

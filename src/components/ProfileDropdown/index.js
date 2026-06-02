@@ -1,83 +1,137 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { CDropdown, CDropdownToggle, CDropdownMenu, CDropdownItem } from '@coreui/react';
 import { cilAccountLogout, cilEnvelopeOpen, cilSettings, cilUser } from '@coreui/icons';
 import { CBadge, CDropdownDivider, CDropdownHeader } from '@coreui/react-pro';
 import CIcon from '@coreui/icons-react';
 import { auth_service } from '../../auth/auth';
 
+const getStoredUserData = () => {
+    if (typeof window === 'undefined') return null;
+    try {
+        const stored = JSON.parse(localStorage.getItem('userData'));
+        return stored?.userData || stored || null;
+    } catch {
+        return null;
+    }
+};
+
+const getAvatarUrl = (name, imageUrl) => {
+    if (imageUrl) return imageUrl;
+    const initials = encodeURIComponent(name || 'Guest');
+    return `https://ui-avatars.com/api/?name=${initials}&background=0D6EFD&color=fff&rounded=true`;
+};
+
 const ProfileDropdown = () => {
     const [visible, setVisible] = useState(false);
+    const [profile, setProfile] = useState({
+        name: 'Guest',
+        email: '',
+        avatar: getAvatarUrl('Guest'),
+    });
+
+    useEffect(() => {
+        const userData = getStoredUserData();
+        const displayName =
+            userData?.name ||
+            userData?.fullName ||
+            userData?.username ||
+            userData?.firstName ||
+            userData?.email ||
+            'Guest';
+        const email = userData?.email || userData?.username || '';
+        const avatar = getAvatarUrl(
+            displayName,
+            userData?.avatar || userData?.avatarUrl || userData?.profilePicture || userData?.image
+        );
+        setProfile({ name: displayName, email, avatar });
+    }, []);
 
     const handleToggle = () => {
         setVisible((prevVisible) => !prevVisible);
     };
 
-    const dropdownSections = [
+    const menuItems = [
         {
-            header: 'Account',
-            items: []
+            label: 'My Profile',
+            icon: cilUser,
+            href: '#',
         },
         {
-            // header: 'Settings',
-            items: [
-                {
-                    label: 'Profile',
-                    icon: cilUser,
-                    href: '#',
-                },
-                {
-                    label: 'Settings',
-                    icon: cilSettings,
-                    href: '#',
-                }
-            ],
+            label: 'Account Settings',
+            icon: cilSettings,
+            href: '#',
+        },
+        {
+            label: 'Support',
+            icon: cilEnvelopeOpen,
+            href: '#',
         },
     ];
 
     const RenderDropdownMenu = () => {
         return (
-            <CDropdownMenu className="pt-0" placement="bottom-end">
-                {dropdownSections && dropdownSections.map((section, index) => (
-
-                    <div key={index}>
-                        {section?.header && (
-                            <CDropdownHeader className="bg-light fw-semibold py-2">
-                                {section.header}
-                            </CDropdownHeader>
-                        )}
-                        {section?.items.map((item, idx) => (
-                            <CDropdownItem href={item.href} key={idx} style={{ cursor: 'pointer' }} >
-                                <CIcon icon={item.icon} className="me-2" />
-                                {item.label}
-                                {item.badge && (
-                                    <CBadge color={item.badge.color} className="ms-2">
-                                        {item.badge.text}
-                                    </CBadge>
-                                )}
-                            </CDropdownItem>
-                        ))}
+            <CDropdownMenu className="profile-dropdown-menu shadow-lg" placement="bottom-end">
+                <div className="profile-dropdown-card p-3">
+                    <div className="profile-card-header d-flex align-items-center gap-3">
+                        <img
+                            src={profile.avatar}
+                            alt={profile.name}
+                            className="profile-card-avatar"
+                        />
+                        <div>
+                            <div className="profile-card-name">{profile.name}</div>
+                            {profile.email && (
+                                <div className="profile-card-email text-muted">{profile.email}</div>
+                            )}
+                        </div>
                     </div>
-                ))}
-                <CDropdownDivider />
-                <CDropdownItem onClick={() => auth_service.logout()} style={{ cursor: 'pointer' }} >
-                    <CIcon icon={cilAccountLogout} className="me-2" />
-                    Logout
+                </div>
+                <div className="profile-dropdown-actions">
+                    {menuItems.map((item, idx) => (
+                        <CDropdownItem
+                            href={item.href}
+                            key={idx}
+                            className="profile-dropdown-item"
+                        >
+                            <CIcon icon={item.icon} className="me-3 text-primary" />
+                            <div>
+                                <div className="fw-semibold">{item.label}</div>
+                                <div className="text-muted small">Quick access</div>
+                            </div>
+                        </CDropdownItem>
+                    ))}
+                </div>
+                <CDropdownDivider className="my-2" />
+                <CDropdownItem
+                    onClick={() => auth_service.logout()}
+                    className="profile-dropdown-logout"
+                >
+                    <CIcon icon={cilAccountLogout} className="me-2 text-danger" />
+                    Sign out
                 </CDropdownItem>
             </CDropdownMenu>
         );
     };
 
     return (
-        <CDropdown alignment="end" visible={visible} onVisibleChange={setVisible} >
-            <CDropdownToggle className="p-0 border-0 bg-transparent" caret={false} onClick={() => { handleToggle() }} >
-                <img
-                    src="https://ui-avatars.com/api/?name=Dheeraj+Khanna"
-                    alt="User"
-                    className="rounded-circle"
-                    width="36"
-                    height="36"
-                    style={{ objectFit: 'cover', cursor: 'pointer' }}
-                />
+        <CDropdown alignment="end" visible={visible} onVisibleChange={setVisible}>
+            <CDropdownToggle className="p-0 border-0 bg-transparent profile-dropdown-toggle" caret={false} onClick={handleToggle}>
+                <div className="profile-dropdown-button d-flex align-items-center gap-2">
+                    <img
+                        src={profile.avatar}
+                        alt={profile.name}
+                        title={profile.name}
+                        className="rounded-circle profile-dropdown"
+                        width="40"
+                        height="40"
+                        style={{ objectFit: 'cover' }}
+                    />
+                    <div className="profile-dropdown-label d-none d-md-flex flex-column">
+                        <span className="profile-dropdown-name">{profile.name}</span>
+                        {profile.email && <span className="profile-dropdown-role text-muted">{profile.email}</span>}
+                    </div>
+                    <span className="profile-dropdown-chevron">▾</span>
+                </div>
             </CDropdownToggle>
             {visible && RenderDropdownMenu()}
         </CDropdown>

@@ -1,47 +1,172 @@
 body {
-  background-color: #9A616D;
   margin: 0;
   padding: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #0f2027 0%, #203a43 40%, #2c5364 100%);
+  color: #152238;
 }
 
-.login-page-bg {
-  background-color: #9A616D;
+.login-page {
+  position: relative;
+  overflow: hidden;
+  background: transparent;
+}
+
+.background-glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(70px);
+  opacity: 0.55;
+  z-index: 0;
+}
+
+.background-glow-top {
+  width: 420px;
+  height: 420px;
+  top: -150px;
+  right: -120px;
+  background: rgba(37, 211, 102, 0.22);
+}
+
+.background-glow-bottom {
+  width: 360px;
+  height: 360px;
+  bottom: -140px;
+  left: -100px;
+  background: rgba(255, 255, 255, 0.12);
 }
 
 .login-card {
-  background-color: #fff;
-  border-radius: 20px;
+  position: relative;
+  z-index: 1;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.7);
 }
 
-.login-image-container {
-  background-color: #fff;
+.login-hero-panel {
+  background: linear-gradient(180deg, #25d366 0%, #128c7e 100%);
+  min-height: 100%;
 }
 
-.login-image {
-  border-top-left-radius: 20px;
-  border-bottom-left-radius: 20px;
-  object-fit: cover;
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+  color: #ffffff;
+  font-size: 0.82rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
-.login-btn {
-  background-color: #2e2e2e !important;
-  border: none;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
-  font-weight: bold;
-}
-
-.login-logo {
-  max-height: 80px;
+.login-illustration {
+  width: 100%;
+  max-width: 320px;
   object-fit: contain;
 }
 
-/* Focus style for form inputs */
-.custom-input:focus {
-  outline: 3px solid #007bff !important; /* Blue outline on focus */
-  border-color: #007bff !important; /* Border color */
-  box-shadow: 0 0 0 0.2rem rgba(38, 143, 255, 0.25); /* Optional: glow effect */
+.hero-title {
+  font-size: clamp(2rem, 2.4vw, 2.55rem);
+  line-height: 1.05;
 }
-.email-input::placeholder {
-  font-size: 17px;
+
+.hero-copy {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.92);
+  max-width: 400px;
+}
+
+.hero-features {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.95);
+  line-height: 1.9;
+}
+
+.hero-features li {
+  position: relative;
+  padding-left: 24px;
+}
+
+.hero-features li::before {
+  content: '\2022';
+  position: absolute;
+  left: 0;
+  color: #ffffff;
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
+.login-btn {
+  background: linear-gradient(90deg, #25d366 0%, #128c7e 100%);
+  border: none !important;
+  border-radius: 16px;
+  height: 54px;
+  font-size: 1rem;
+  letter-spacing: 0.4px;
+  box-shadow: 0 16px 30px rgba(37, 211, 98, 0.18);
+}
+
+.login-btn:hover,
+.login-btn:focus {
+  background: linear-gradient(90deg, #1fa55c 0%, #0f785f 100%);
+}
+
+.login-logo-wrapper {
+  width: 100px;
+  height: 100px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 28px;
+  background: linear-gradient(135deg, #25d366 0%, #128c7e 100%);
+  box-shadow: 0 24px 65px rgba(37, 211, 98, 0.18);
+}
+
+.login-logo {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+}
+
+.login-input {
+  border-radius: 16px;
+  height: 56px;
+  border: 1px solid #d9dbe1;
+  box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.05);
+  background: #f8fafc;
+}
+
+.login-input:focus {
+  border-color: #25d366;
+  box-shadow: 0 0 0 0.2rem rgba(37, 211, 98, 0.18);
+  outline: none;
+}
+
+.password-toggle-btn {
+  position: absolute;
+  top: 50%;
+  right: 16px;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+}
+
+.alert-danger {
+  border-radius: 16px;
+  background: #fdecea;
+  border-color: #f5c2c7;
+}
+
+.text-secondary {
+  color: #6b7280 !important;
 }
