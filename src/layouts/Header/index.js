@@ -6,7 +6,6 @@ import { CHeader, CContainer, CHeaderBrand, CHeaderToggler } from '@coreui/react
 import { cilMenu } from '@coreui/icons';
 import CIcon from '@coreui/icons-react';
 import SearchBar from '../../components/SearchBar';
-import Notification from '../../components/Notification';
 import ProfileDropdown from '../../components/ProfileDropdown';
 
 const Header = ({ sidebarShow, setSidebarShow }) => {

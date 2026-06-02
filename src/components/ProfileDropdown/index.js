@@ -15,32 +15,7 @@ const ProfileDropdown = () => {
     const dropdownSections = [
         {
             header: 'Account',
-            items: [
-                {
-                    label: 'Updates',
-                    icon: cilBell,
-                    badge: { color: 'info', text: '42' },
-                    href: '#',
-                },
-                {
-                    label: 'Messages',
-                    icon: cilEnvelopeOpen,
-                    badge: { color: 'success', text: '42' },
-                    href: '#',
-                },
-                {
-                    label: 'Tasks',
-                    icon: cilTask,
-                    badge: { color: 'danger', text: '42' },
-                    href: '#',
-                },
-                {
-                    label: 'Comments',
-                    icon: cilCommentSquare,
-                    badge: { color: 'warning', text: '42' },
-                    href: '#',
-                },
-            ],
+            items: []
         },
         {
             header: 'Settings',
@@ -54,19 +29,7 @@ const ProfileDropdown = () => {
                     label: 'Settings',
                     icon: cilSettings,
                     href: '#',
-                },
-                {
-                    label: 'Payments',
-                    icon: cilCreditCard,
-                    badge: { color: 'secondary', text: '42' },
-                    href: '#',
-                },
-                {
-                    label: 'Projects',
-                    icon: cilFile,
-                    badge: { color: 'primary', text: '42' },
-                    href: '#',
-                },
+                }
             ],
         },
     ];
