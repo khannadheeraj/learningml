@@ -194,8 +194,9 @@ export default function SendInvitationDashboard() {
   }
 
   return (
-    <main className="dashboard-shell">
-      <section className="dashboard-card">
+    <main className="">
+     
+     <section className="dashboard-card">
         <header className="dashboard-header">
           <div>
             <p className="eyebrow">Invitation</p>
