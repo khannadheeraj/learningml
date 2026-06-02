@@ -118,6 +118,14 @@ export default function UploadContacts() {
     });
   }
 
+
+  const resetModal = () => {
+    setIsModalOpen(false);
+    setSelectedIds([]);
+    setUploadUsers([]);
+    setUploadMessage("");
+  }
+
   function openPicker() {
     fileInputRef.current?.click();
   }
@@ -251,7 +259,7 @@ export default function UploadContacts() {
                 type="button"
                 className="icon-button"
                 aria-label="Close popup"
-                onClick={() => setIsModalOpen(false)}
+                onClick={() => resetModal()}
               >
                 x
               </button>
