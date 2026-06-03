@@ -539,6 +539,157 @@ td {
     max-height: 300px;
   }
 
+  /* Custom toast styling for a cleaner professional look */
+  .toastify-toast {
+    border-radius: 18px;
+    border: 1px solid rgba(15, 123, 255, 0.14);
+    background: #ffffff;
+    color: #0f213f;
+    box-shadow: 0 32px 80px rgba(15, 23, 42, 0.12);
+    padding: 16px;
+    min-height: 72px;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  .Toastify__toast--success {
+    border-left: 5px solid #22c55e;
+  }
+
+  .Toastify__toast--error {
+    border-left: 5px solid #ef4444;
+  }
+
+  .Toastify__toast--info {
+    border-left: 5px solid #3b82f6;
+  }
+
+  .toastify-body {
+    margin: 0;
+    font-size: 0.96rem;
+    line-height: 1.55;
+    font-weight: 600;
+    color: #102a43;
+  }
+
+  .toastify-progress {
+    background: linear-gradient(90deg, #22c55e, #0f7bff);
+    border-radius: 999px;
+    height: 6px;
+  }
+
+  .toastify-upload-summary {
+    display: grid;
+    gap: 16px;
+    max-width: 440px;
+  }
+
+  .toastify-upload-header {
+    display: grid;
+    gap: 8px;
+  }
+
+  .toastify-upload-label {
+    font-size: 1rem;
+    font-weight: 800;
+    color: #0f172a;
+  }
+
+  .toastify-upload-note {
+    color: #475569;
+    line-height: 1.5;
+    font-size: 0.95rem;
+  }
+
+  .toastify-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .toastify-stat {
+    display: grid;
+    gap: 5px;
+    padding: 14px 16px;
+    border-radius: 16px;
+    background: #f8fafc;
+    border: 1px solid rgba(15, 123, 255, 0.1);
+    text-align: center;
+  }
+
+  .toastify-stat-number {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #0f4c81;
+  }
+
+  .toastify-stat-label {
+    color: #64748b;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .toastify-section {
+    display: grid;
+    gap: 10px;
+    padding: 14px 18px;
+    border-radius: 18px;
+    background: #ffffff;
+    border: 1px solid rgba(148, 163, 184, 0.16);
+  }
+
+  .toastify-section-secondary {
+    background: #f8fafc;
+  }
+
+  .toastify-section-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #0f4c81;
+  }
+
+  .toastify-list {
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 10px;
+    color: #334e68;
+    font-size: 0.92rem;
+  }
+
+  .toastify-list li {
+    list-style: none;
+    padding-left: 16px;
+    position: relative;
+    color: #102a43;
+  }
+
+  .toastify-list li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.8rem;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #0f7bff;
+  }
+
+  .Toastify__close-button {
+    opacity: 0.8;
+    color: #64748b;
+  }
+
+  .Toastify__toast-body {
+    padding: 0;
+  }
+
+  .Toastify__close-button:hover {
+    opacity: 1;
+  }
+
+
   .actions {
     text-align: center;
   }

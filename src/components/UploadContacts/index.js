@@ -1,6 +1,8 @@
 import { useRef, useState } from "react";
 import axios from "axios";
 import * as XLSX from "xlsx";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./uploadContacts.css";
 
 const USERNAME_KEYS = ["username", "user", "name", "fullname", "contactname"];
@@ -46,7 +48,6 @@ export default function UploadContacts() {
   const [error, setError] = useState("");
   const [uploadUsers, setUploadUsers] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
-  const [uploadMessage, setUploadMessage] = useState("");
 
   const selectedCount = selectedIds.length;
   const allSelected = contacts.length > 0 && selectedCount === contacts.length;
@@ -66,7 +67,6 @@ export default function UploadContacts() {
       setSelectedIds([]);
       setUploadUsers([]);
       setFileName("");
-      setUploadMessage("");
       setError("Please upload only CSV, XLSX, or XLS files.");
       return;
     }
@@ -83,7 +83,6 @@ export default function UploadContacts() {
       setSelectedIds([]);
       setUploadUsers([]);
       setFileName(file.name);
-      setUploadMessage("");
 
       if (!nextContacts.length) {
         setError(
@@ -95,19 +94,16 @@ export default function UploadContacts() {
       setSelectedIds([]);
       setUploadUsers([]);
       setFileName("");
-      setUploadMessage("");
       setError("Could not read this file. Please try another CSV/XLSX file.");
     }
   }
 
   function toggleSelectAll(checked) {
-    setUploadMessage("");
     setSelectedIds(checked ? contacts.map((contact) => contact.id) : []);
     setUploadUsers(checked ? contacts : []);
   }
 
   function toggleContact(id, checked) {
-    setUploadMessage("");
     setSelectedIds((current) => {
       const nextIds = checked
         ? Array.from(new Set([...current, id]))
@@ -123,7 +119,6 @@ export default function UploadContacts() {
     setIsModalOpen(false);
     setSelectedIds([]);
     setUploadUsers([]);
-    setUploadMessage("");
   }
 
   function openPicker() {
@@ -132,7 +127,14 @@ export default function UploadContacts() {
 
   async function handleUploadUsers() {
     if (!uploadUsers.length) {
-      setUploadMessage("Please select at least one contact.");
+      toast.info("Please select at least one contact.", {
+        position: "top-right",
+        autoClose: 4000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
       return;
     }
 
@@ -145,17 +147,80 @@ export default function UploadContacts() {
 
     try {
       setIsUploading(true);
-      setUploadMessage("");
 
-      await axios.post(`${UPLOAD_CONTACTS_API}/upload-bulk-users`, payload, {
+      const response = await axios.post(`${UPLOAD_CONTACTS_API}/users/bulk-upload`, payload, {
         headers: {
           "Content-Type": "application/json",
         },
       });
 
-      setUploadMessage(`${uploadUsers.length} contact(s) uploaded successfully.`);
+      const {
+        message,
+        alreadyPresent = [],
+        invalidUsers = [],
+        uploaded = uploadUsers.length,
+        total = uploadUsers.length,
+      } = response.data || {};
+
+      const summaryParts = [`${uploaded} uploaded successfully`];
+      if (!message) {
+        if (alreadyPresent.length > 0) {
+          summaryParts.push(`${alreadyPresent.length} already present`);
+        }
+        if (invalidUsers.length > 0) {
+          summaryParts.push(`${invalidUsers.length} invalid`);
+        }
+      }
+
+      const summaryMessage = message || `${summaryParts.join(", ")}.`;
+
+      toast.success(
+        <div className="toastify-upload-summary">
+          <div className="toastify-upload-header">
+            <div className="toastify-upload-note">{summaryMessage}</div>
+          </div>
+
+          {alreadyPresent.length > 0 && (
+            <div className="toastify-section">
+              <div className="toastify-section-title">Already present</div>
+              <ul className="toastify-list">
+                {alreadyPresent.map((user, index) => (
+                  <li key={`${user.username || user.phoneNumber}-${index}`}>
+                    <strong>{user.username || user.phoneNumber}</strong>
+                    {user.username && user.phoneNumber ? ` — ${user.phoneNumber}` : ""}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {invalidUsers.length > 0 && (
+            <div className="toastify-section toastify-section-secondary">
+              <div className="toastify-section-title">Invalid contacts</div>
+              <span className="toastify-upload-text">
+                {invalidUsers.length} contact(s) were invalid and skipped.
+              </span>
+            </div>
+          )}
+        </div>,
+        {
+          position: "top-right",
+          autoClose: 7000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        }
+      );
     } catch {
-      setUploadMessage("Could not upload contacts. Please try again.");
+      toast.error("Could not upload contacts. Please try again.", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
     } finally {
       setIsUploading(false);
     }
@@ -327,7 +392,6 @@ export default function UploadContacts() {
                 <span>
                   {selectedCount} selected from {contacts.length} uploaded contacts
                 </span>
-                {uploadMessage && <small>{uploadMessage}</small>}
               </div>
               <button
                 type="button"
@@ -340,6 +404,21 @@ export default function UploadContacts() {
           </section>
         </div>
       )}
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={true}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        toastClassName="toastify-toast"
+        bodyClassName="toastify-body"
+        progressClassName="toastify-progress"
+      />
     </main>
   );
 }
