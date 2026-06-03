@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
+import { FaPaperPlane } from 'react-icons/fa';
 import './invitation.css';
 import { usersData } from "./mockData";
 
 const USERS_API =
-  import.meta.env.VITE_INVITATION_USERS_API ||
-  import.meta.env.VITE_UPLOAD_CONTACTS_API ||
-  "/api/upload-contacts";
+  process.env.REACT_APP_recommendServiceURL +
+  "/users/all";
 const CAMPAIGNS_API = import.meta.env.VITE_CAMPAIGNS_API || "/api/campaigns";
 const SEND_INVITATION_API =
   import.meta.env.VITE_SEND_INVITATION_API || "/api/send-invitation";
@@ -81,15 +81,20 @@ export default function SendInvitationDashboard() {
   const [selectedUserIds, setSelectedUserIds] = useState([]);
   const [selectedCampaign, setSelectedCampaign] = useState("");
   const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [message, setMessage] = useState("");
+  const [totalCount, setTotalCount] = useState(0);
+  const [serverTotalPages, setServerTotalPages] = useState(null);
+  const [hasNextPage, setHasNextPage] = useState(null);
+  const [hasPrevPage, setHasPrevPage] = useState(null);
 
-  const totalPages = Math.max(1, Math.ceil(users.length / PAGE_SIZE));
-  const currentPageUsers = useMemo(() => {
-    const start = (page - 1) * PAGE_SIZE;
-    return users.slice(start, start + PAGE_SIZE);
-  }, [page, users]);
+  const totalPages = serverTotalPages || Math.max(1, Math.ceil((totalCount || users.length) / PAGE_SIZE));
+  // when using server-side pagination the `users` array contains the current page
+  // so render it directly instead of slicing client-side
+  const currentPageUsers = useMemo(() => users, [users]);
 
   const selectedUsers = useMemo(
     () => users.filter((user) => selectedUserIds.includes(user.id)),
@@ -100,37 +105,76 @@ export default function SendInvitationDashboard() {
     users.length > 0 && users.every((user) => selectedUserIds.includes(user.id));
 
   useEffect(() => {
-    async function fetchInvitationData() {
+    let cancelled = false;
+
+    async function fetchCampaigns() {
+      try {
+        const campaignsResponse = await axios.get(CAMPAIGNS_API);
+        if (!cancelled && campaignsResponse?.status === 200) {
+          setCampaigns(normalizeCampaignsResponse(campaignsResponse.data));
+        }
+      } catch (e) {
+        // ignore, keep default campaigns
+      }
+    }
+
+    fetchCampaigns();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // debounce search input
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearch(search.trim()), 400);
+    return () => clearTimeout(t);
+  }, [search]);
+
+  // refetch when page or debouncedSearch changes
+  useEffect(() => {
+    // when page or search changes, trigger the same fetch logic as initial load
+    async function refetch() {
       try {
         setIsLoading(true);
         setMessage("");
 
-        const [usersResponse, campaignsResponse] = await Promise.allSettled([
-          axios.get(USERS_API),
-          axios.get(CAMPAIGNS_API),
-        ]);
+        const usersResponse = await axios.get(USERS_API, {
+          params: {
+            page,
+            pageSize: PAGE_SIZE,
+            ...(debouncedSearch ? { search: debouncedSearch } : {}),
+          },
+        });
 
-        setUsers(normalizeUsersResponse(usersData));
+        const fetchedUsers = normalizeUsersResponse(usersResponse.data);
+        setUsers(fetchedUsers);
 
-        if (usersResponse.status === "fulfilled") {
-          // setUsers(normalizeUsersResponse(usersResponse.value.data));
-          
-        } else {
-          setMessage("Could not load uploaded users.");
-        }
+        // extract pagination info if the API returns it under `pagination` or `meta`
+        const pagination = usersResponse.data?.pagination || usersResponse.data?.meta || {};
 
-        if (campaignsResponse.status === "fulfilled") {
-          setCampaigns(normalizeCampaignsResponse(campaignsResponse.value.data));
-        }
-      } catch {
-        setMessage("Could not load invitation data.");
+        const totalFromResp =
+          usersResponse.data?.total ||
+          usersResponse.data?.count ||
+          usersResponse.data?.totalCount ||
+          pagination?.totalRecords ||
+          pagination?.total ||
+          fetchedUsers.length;
+
+        const totalPagesFromResp = pagination?.totalPages || usersResponse.data?.totalPages || null;
+
+        setTotalCount(Number(totalFromResp) || fetchedUsers.length);
+        setServerTotalPages(totalPagesFromResp ? Number(totalPagesFromResp) : null);
+        setHasNextPage(typeof pagination?.hasNextPage === 'boolean' ? pagination.hasNextPage : (usersResponse.data?.hasNextPage ?? null));
+        setHasPrevPage(typeof pagination?.hasPrevPage === 'boolean' ? pagination.hasPrevPage : (usersResponse.data?.hasPrevPage ?? null));
+      } catch (e) {
+        setMessage("Could not load uploaded users.");
       } finally {
         setIsLoading(false);
       }
     }
 
-    fetchInvitationData();
-  }, []);
+    refetch();
+  }, [page, debouncedSearch]);
 
   useEffect(() => {
     if (page > totalPages) {
@@ -212,39 +256,67 @@ export default function SendInvitationDashboard() {
 
         {/* Toolbar */}
         <div className="invitation-toolbar">
-          <div className="toolbar-left">
-            <label className="form-group">
-              <span className="form-label">Campaign</span>
-              <select
-                value={selectedCampaign}
-                onChange={(event) => setSelectedCampaign(event.target.value)}
-                className="form-select"
-              >
-                <option value="">Select a campaign...</option>
-                {campaigns.map((campaign) => (
-                  <option key={campaign.id} value={campaign.id}>
-                    {campaign.name}
-                  </option>
-                ))}
-              </select>
-            </label>
-          </div>
+          <label className="form-group">
+            <span className="form-label">Campaign</span>
+            <select
+              value={selectedCampaign}
+              onChange={(event) => setSelectedCampaign(event.target.value)}
+              className="form-select"
+            >
+              <option value="">Select a campaign...</option>
+              {campaigns.map((campaign) => (
+                <option key={campaign.id} value={campaign.id}>
+                  {campaign.name}
+                </option>
+              ))}
+            </select>
+          </label>
 
-          <button
-            type="button"
-            className="btn btn-primary"
-            disabled={isSending || !selectedCampaign || !selectedUsers.length}
-            onClick={handleSendInvitation}
-          >
-            {isSending ? (
-              <>
-                <span className="spinner" />
-                Sending...
-              </>
-            ) : (
-              <>✓ Send Invitations</>
-            )}
-          </button>
+          <label className="form-group">
+            <span className="form-label">Search users</span>
+            <div className="search-wrapper">
+              <span className="search-icon">🔎</span>
+              <input
+                type="search"
+                value={search}
+                onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+                placeholder="Search by username or phone number"
+                className="form-input"
+              />
+              {search && (
+                <button
+                  type="button"
+                  className="search-clear"
+                  aria-label="Clear search"
+                  onClick={() => { setSearch(""); setPage(1); }}
+                >
+                  ×
+                </button>
+              )}
+            </div>
+          </label>
+
+          <label className="form-group action-group">
+            <span className="form-label" aria-hidden="true">&nbsp;</span>
+            <button
+              type="button"
+              className="btn btn-primary invitation-action"
+              disabled={isSending || !selectedCampaign || !selectedUsers.length}
+              onClick={handleSendInvitation}
+            >
+              {isSending ? (
+                <>
+                  <span className="spinner" />
+                  Sending...
+                </>
+              ) : (
+                <>
+                  <FaPaperPlane />
+                  Send Invitations
+                </>
+              )}
+            </button>
+          </label>
         </div>
 
         {/* Status Message */}
@@ -322,7 +394,7 @@ export default function SendInvitationDashboard() {
             <button
               type="button"
               className="pagination-btn"
-              disabled={page === 1}
+              disabled={typeof hasPrevPage === 'boolean' ? !hasPrevPage : page === 1}
               onClick={() => goToPage(page - 1)}
               title="Previous page"
             >
@@ -334,7 +406,7 @@ export default function SendInvitationDashboard() {
             <button
               type="button"
               className="pagination-btn"
-              disabled={page === totalPages}
+              disabled={typeof hasNextPage === 'boolean' ? !hasNextPage : page === totalPages}
               onClick={() => goToPage(page + 1)}
               title="Next page"
             >
