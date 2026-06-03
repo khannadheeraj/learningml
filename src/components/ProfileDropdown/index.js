@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { CDropdown, CDropdownToggle, CDropdownMenu, CDropdownItem } from '@coreui/react';
 import { cilAccountLogout, cilEnvelopeOpen, cilSettings, cilUser } from '@coreui/icons';
-import { CBadge, CDropdownDivider, CDropdownHeader } from '@coreui/react-pro';
+import {CDropdownDivider } from '@coreui/react-pro';
 import CIcon from '@coreui/icons-react';
 import { auth_service } from '../../auth/auth';
 

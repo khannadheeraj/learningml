@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { CHeader, CContainer, CHeaderBrand, CHeaderToggler, CBadge } from '@coreui/react';
+import { CHeader, CContainer, CHeaderBrand, CHeaderToggler } from '@coreui/react';
 import { cilSearch } from '@coreui/icons';
 import CIcon from '@coreui/icons-react';
 import ProfileDropdown from '../../components/ProfileDropdown';
