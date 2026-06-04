@@ -6,7 +6,9 @@ import './invitation.css';
 const USERS_API =
   process.env.REACT_APP_recommendServiceURL +
   "/users/all";
-const CAMPAIGNS_API = import.meta.env.VITE_CAMPAIGNS_API || "/api/campaigns";
+const API_BASE_URL =
+  process.env.REACT_APP_recommendServiceURL;
+const CAMPAIGNS_API = `${API_BASE_URL.replace(/\/$/, "")}/template/all`;
 const SEND_INVITATION_API =
   import.meta.env.VITE_SEND_INVITATION_API || "/api/send-invitation";
 const PAGE_SIZE = 10;
@@ -26,6 +28,10 @@ function normalizeUsersResponse(data) {
   }));
 }
 
+function formatCampaignLabel(name) {
+  return String(name || "").replace(/_/g, " ");
+}
+
 function normalizeCampaignsResponse(data) {
   const campaigns = Array.isArray(data)
     ? data
@@ -35,48 +41,28 @@ function normalizeCampaignsResponse(data) {
     if (typeof campaign === "string") {
       return {
         id: campaign,
-        name: campaign,
+        name: formatCampaignLabel(campaign),
       };
     }
 
+    const campaignName =
+      campaign.name ||
+      campaign.campaignName ||
+      campaign.value ||
+      campaign.label ||
+      campaign.title ||
+      "";
+
     return {
-      id: campaign.id || campaign._id || campaign.value || `campaign-${index}`,
-      name:
-        campaign.name ||
-        campaign.campaignName ||
-        campaign.label ||
-        campaign.title ||
-        "",
+      id: campaignName || campaign.id || campaign._id || `campaign-${index}`,
+      name: formatCampaignLabel(campaignName),
     };
   });
 }
 
 export default function SendInvitationDashboard() {
-
-
-  const campaignsData = [
-  {
-    id: "campaign_1",
-    name: "Wedding Invitation Campaign",
-  },
-  {
-    id: "campaign_2",
-    name: "RSVP Reminder Campaign",
-  },
-  {
-    id: "campaign_3",
-    name: "Photo Sharing Campaign",
-  },
-  {
-    id: "campaign_4",
-    name: "Thank You Campaign",
-  },
-];
-
-
-
   const [users, setUsers] = useState([]);
-  const [campaigns, setCampaigns] = useState(campaignsData);
+  const [campaigns, setCampaigns] = useState([]);
   const [selectedUserIds, setSelectedUserIds] = useState([]);
   const [selectedCampaign, setSelectedCampaign] = useState("");
   const [page, setPage] = useState(1);
@@ -113,7 +99,7 @@ export default function SendInvitationDashboard() {
           setCampaigns(normalizeCampaignsResponse(campaignsResponse.data));
         }
       } catch (e) {
-        // ignore, keep default campaigns
+        // Leave campaign options empty if templates cannot be loaded.
       }
     }
 
