@@ -175,24 +175,25 @@ const Login = () => {
 
     return (
 
-        <div className="login-page min-vh-100 d-flex align-items-center justify-content-center position-relative overflow-hidden">
+        <div className="login-page min-vh-100 d-flex align-items-center justify-content-center position-relative">
 
             <div className="background-glow background-glow-top" />
             <div className="background-glow background-glow-bottom" />
 
-            <CContainer>
+            <CContainer className="login-container">
 
                 <CRow className="justify-content-center">
 
-                    <CCol xl={10} lg={11}>
+                    <CCol xs={12} xl={10} lg={11} className="login-shell">
 
                         <CCard className="login-card border-0 shadow-lg overflow-hidden">
 
                             <CRow className="g-0">
 
                                 <CCol
-                                    md={6}
-                                    className="login-hero-panel d-none d-md-flex flex-column justify-content-center align-items-start text-white p-5 position-relative"
+                                    xs={12}
+                                    lg={6}
+                                    className="login-hero-panel d-none d-lg-flex flex-column justify-content-center align-items-start text-white p-5 position-relative"
                                 >
 
                                     <div className="hero-badge mb-4">Secure workspace</div>
@@ -220,11 +221,12 @@ const Login = () => {
                                 </CCol>
 
                                 <CCol
-                                    md={6}
+                                    xs={12}
+                                    lg={6}
                                     className="login-form-panel d-flex align-items-center"
                                 >
 
-                                    <CCardBody className="p-4 p-lg-5">
+                                    <CCardBody className="login-card-body p-4 p-lg-5">
 
                                         <div className="text-center mb-4">
 

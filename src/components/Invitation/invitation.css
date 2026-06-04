@@ -1221,3 +1221,205 @@ td {
     padding: 12px;
   }
 }
+
+/* Mobile refinements for the send invitation view */
+main.app-shell {
+  width: 100%;
+  justify-items: stretch;
+}
+
+.invitation-card {
+  width: min(1220px, 100%);
+}
+
+@media (max-width: 1024px) {
+  .invitation-toolbar {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .action-group {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 768px) {
+  main.app-shell {
+    align-items: start;
+    padding: 14px 0 20px;
+  }
+
+  .invitation-card {
+    border-radius: 10px;
+  }
+
+  .invitation-header {
+    padding: 20px 16px;
+  }
+
+  .header-title {
+    font-size: 24px;
+    line-height: 1.18;
+  }
+
+  .header-description {
+    font-size: 14px;
+  }
+
+  .invitation-toolbar {
+    grid-template-columns: 1fr;
+    gap: 14px;
+    padding: 16px;
+  }
+
+  .action-group {
+    grid-column: auto;
+  }
+
+  .search-wrapper {
+    width: 100%;
+    max-width: none;
+  }
+
+  .search-icon,
+  .search-clear {
+    flex: 0 0 auto;
+  }
+
+  .form-input,
+  .form-select {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .status-alert {
+    margin: 14px 16px 0;
+  }
+
+  .table-container {
+    max-height: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .invitation-header {
+    gap: 14px;
+  }
+
+  .header-badge {
+    margin-bottom: 10px;
+    border-radius: 8px;
+  }
+
+  .header-title {
+    font-size: 22px;
+  }
+
+  .header-link {
+    min-height: 44px;
+    padding: 10px 14px;
+  }
+
+  .search-wrapper {
+    gap: 6px;
+  }
+
+  .search-icon,
+  .search-clear {
+    width: 40px;
+    height: 40px;
+  }
+
+  .form-input,
+  .form-select,
+  .btn-primary {
+    min-height: 44px;
+  }
+
+  .data-table {
+    min-width: 0;
+  }
+
+  .data-table thead {
+    display: none;
+  }
+
+  .data-table,
+  .data-table tbody,
+  .data-table tr,
+  .data-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .data-table tr {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .data-table td {
+    padding: 6px 0;
+    border-bottom: 0;
+  }
+
+  .data-table .col-checkbox {
+    width: auto;
+    text-align: left;
+  }
+
+  .data-table .col-username,
+  .data-table .col-phone {
+    display: grid;
+    grid-template-columns: 92px minmax(0, 1fr);
+    gap: 12px;
+    align-items: center;
+  }
+
+  .data-table .col-username::before,
+  .data-table .col-phone::before {
+    color: var(--text-muted);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .data-table .col-username::before {
+    content: "Username";
+  }
+
+  .data-table .col-phone::before {
+    content: "Phone";
+  }
+
+  .table-empty {
+    display: block !important;
+    padding: 28px 14px !important;
+  }
+
+  .invitation-footer {
+    gap: 14px;
+    padding: 14px 16px;
+  }
+
+  .selection-info,
+  .info-text {
+    width: 100%;
+    text-align: center;
+  }
+
+  .pagination-controls {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .pagination-btn {
+    min-height: 42px;
+    width: 100%;
+  }
+
+  .pagination-info {
+    order: -1;
+    text-align: center;
+  }
+}

@@ -203,7 +203,7 @@ const Dashboard = () => {
       : 0;
 
   return (
-    <div className="container-fluid p-4">
+    <div className="container-fluid p-4 dashboard-page">
       {/* HEADER */}
 
       <CCard
@@ -215,7 +215,7 @@ const Dashboard = () => {
         }}
       >
         <CCardBody className="text-white p-4">
-          <div className="d-flex justify-content-between align-items-center">
+          <div className="d-flex justify-content-between align-items-center dashboard-hero">
             <div>
               <h2 className="fw-bold mb-2">
                 WhatsApp Campaign Analytics
@@ -362,7 +362,7 @@ const Dashboard = () => {
                 Performance Metrics
               </h5>
 
-              <div className="d-flex justify-content-between py-3 border-bottom">
+              <div className="d-flex justify-content-between py-3 border-bottom metric-row">
                 <span>
                   Delivery Rate
                 </span>
@@ -374,7 +374,7 @@ const Dashboard = () => {
                 </strong>
               </div>
 
-              <div className="d-flex justify-content-between py-3 border-bottom">
+              <div className="d-flex justify-content-between py-3 border-bottom metric-row">
                 <span>
                   Read Rate
                 </span>
@@ -383,7 +383,7 @@ const Dashboard = () => {
                 </strong>
               </div>
 
-              <div className="d-flex justify-content-between py-3">
+              <div className="d-flex justify-content-between py-3 metric-row">
                 <span>
                   Total Records
                 </span>
@@ -589,7 +589,7 @@ const Dashboard = () => {
                 </CTableBody>
               </CTable>
 
-              <div className="d-flex justify-content-between align-items-center mt-4">
+              <div className="d-flex justify-content-between align-items-center mt-4 dashboard-pagination">
                 <strong>
                   Total :
                   {" "}

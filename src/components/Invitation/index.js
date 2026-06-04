@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { FaPaperPlane } from 'react-icons/fa';
 import './invitation.css';
-import { usersData } from "./mockData";
 
 const USERS_API =
   process.env.REACT_APP_recommendServiceURL +

@@ -159,7 +159,6 @@ export default function UploadContacts() {
         alreadyPresent = [],
         invalidUsers = [],
         uploaded = uploadUsers.length,
-        total = uploadUsers.length,
       } = response.data || {};
 
       const summaryParts = [`${uploaded} uploaded successfully`];

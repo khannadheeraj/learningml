@@ -704,3 +704,91 @@ td {
     padding: 12px;
   }
 }
+
+@media (max-width: 768px) {
+  .upload-panel {
+    width: 100%;
+    border-radius: 10px;
+  }
+
+  .panel-copy {
+    margin-bottom: 22px;
+  }
+
+  .panel-copy h3 {
+    font-size: 22px;
+    line-height: 1.2;
+  }
+
+  .actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .upload-status {
+    justify-content: center;
+    min-height: 42px;
+    width: 100%;
+    border-radius: 8px;
+  }
+
+  .modal-header,
+  .modal-footer {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .modal-footer-copy {
+    text-align: center;
+  }
+
+  .table-wrap table {
+    min-width: 520px;
+  }
+}
+
+@media (max-width: 480px) {
+  .app-shell {
+    padding: 14px 0 18px;
+  }
+
+  .upload-panel {
+    padding: 18px 14px;
+  }
+
+  .drop-zone {
+    min-height: 190px;
+    padding: 22px 14px;
+  }
+
+  .drop-zone strong {
+    font-size: 18px;
+  }
+
+  .upload-visual {
+    width: 64px;
+    height: 64px;
+  }
+
+  .upload-icon {
+    width: 50px;
+    height: 50px;
+    font-size: 28px;
+  }
+
+  .modal-backdrop {
+    padding: 10px;
+  }
+
+  .modal-card {
+    width: calc(100vw - 20px);
+    max-height: calc(100vh - 20px);
+    max-height: calc(100dvh - 20px);
+  }
+
+  .modal-header,
+  .modal-footer,
+  .modal-summary {
+    padding: 14px;
+  }
+}
