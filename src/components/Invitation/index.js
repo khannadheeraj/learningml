@@ -327,6 +327,7 @@ export default function SendInvitationDashboard() {
                 </th>
                 <th className="col-username">Username</th>
                 <th className="col-phone">Phone Number</th>
+                 <th className="col-phone">Description</th>
               </tr>
             </thead>
             <tbody>
@@ -354,6 +355,9 @@ export default function SendInvitationDashboard() {
                     </td>
                     <td className="col-phone">
                       <span className="phone-number">{user.phoneNumber || '—'}</span>
+                    </td>
+                    <td className="col-phone">
+                      <span className="phone-number">{user.description || '—'}</span>
                     </td>
                   </tr>
                 ))
