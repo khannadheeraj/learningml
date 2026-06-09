@@ -14,6 +14,8 @@ const PHONE_KEYS = [
   "contactnumber",
   "number",
 ];
+const DESCRIPTION_KEYS = ["description", "desc", "note", "notes", "details", "info"];
+
 const UPLOAD_CONTACTS_API = process.env.REACT_APP_recommendServiceURL;
 
 function normalizeKey(key) {
@@ -30,11 +32,15 @@ function findCell(row, acceptedKeys) {
 
 function formatRows(sheetRows) {
   return sheetRows
-    .map((row, index) => ({
-      id: `contact-${index}`,
-      username: findCell(row, USERNAME_KEYS),
-      phoneNumber: findCell(row, PHONE_KEYS),
-    }))
+    .map((row, index) => {
+      const description = findCell(row, DESCRIPTION_KEYS);
+      return {
+        id: `contact-${index}`,
+        username: findCell(row, USERNAME_KEYS),
+        phoneNumber: findCell(row, PHONE_KEYS),
+        description: description !== "" ? description : null,
+      };
+    })
     .filter((row) => row.username || row.phoneNumber);
 }
 
@@ -114,12 +120,11 @@ export default function UploadContacts() {
     });
   }
 
-
   const resetModal = () => {
     setIsModalOpen(false);
     setSelectedIds([]);
     setUploadUsers([]);
-  }
+  };
 
   function openPicker() {
     fileInputRef.current?.click();
@@ -139,20 +144,25 @@ export default function UploadContacts() {
     }
 
     const payload = {
-      users: uploadUsers.map(({ username, phoneNumber }) => ({
+      users: uploadUsers.map(({ username, phoneNumber, description }) => ({
         username,
         phoneNumber,
+        description,
       })),
     };
 
     try {
       setIsUploading(true);
 
-      const response = await axios.post(`${UPLOAD_CONTACTS_API}/users/bulk-upload`, payload, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await axios.post(
+        `${UPLOAD_CONTACTS_API}/users/bulk-upload`,
+        payload,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       const {
         message,
@@ -226,7 +236,7 @@ export default function UploadContacts() {
   }
 
   return (
-    <main className="app-shell" >
+    <main className="app-shell">
       <section className="upload-panel">
         <div className="panel-copy">
           <p className="eyebrow">Contacts Import</p>
@@ -315,9 +325,7 @@ export default function UploadContacts() {
               <div className="modal-title-block">
                 <p className="eyebrow">Uploaded Data</p>
                 <h2 id="contacts-modal-title">Select contacts</h2>
-                <span>
-                  Choose one or more contacts from the uploaded file.
-                </span>
+                <span>Choose one or more contacts from the uploaded file.</span>
               </div>
               <button
                 type="button"
@@ -361,6 +369,7 @@ export default function UploadContacts() {
                     </th>
                     <th>Username</th>
                     <th>Phone Number</th>
+                    <th>Description</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -380,6 +389,7 @@ export default function UploadContacts() {
                       </td>
                       <td>{contact.username || "-"}</td>
                       <td>{contact.phoneNumber || "-"}</td>
+                      <td>{contact.description ?? "-"}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -403,6 +413,7 @@ export default function UploadContacts() {
           </section>
         </div>
       )}
+
       <ToastContainer
         position="top-right"
         autoClose={5000}
