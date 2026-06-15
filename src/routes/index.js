@@ -4,6 +4,7 @@ const Dashboard = React.lazy(() => import('../components/Dashboard/index'))
 const LogOut = React.lazy(() => import('../components/LogOut/index'))
 const SendInvitationDashboard = React.lazy(() => import('../components/Invitation/index'))
 const UploadContacts = React.lazy(() => import('../components/UploadContacts/index'))
+const ManageContacts = React.lazy(() => import('../components/ManageContacts/index'))
 
 
 
@@ -13,6 +14,9 @@ const routes = [
     { path: '/logout', name: 'Logout', element: <LogOut /> },
     { path: '/upload-contacts', name: 'Upload Contacts', element: <UploadContacts /> },
     { path: '/send-invitation', name: 'Send Invitation', element: <SendInvitationDashboard /> },
+    // <Route path="/contacts" element={<ContactsListPage />} />
+    { path: '/manage-contacts', name: 'Send Invitation', element: <ManageContacts /> },
+
     //  { path: '/test-send-invitation', name: 'Test Send Invitation', element: <TestSendInvitation /> },
 
 ]

@@ -1,0 +1,383 @@
+.contacts-page {
+  display: flex;
+  justify-content: center;
+  padding: 32px 24px;
+  background: #eaf6f4;
+  min-height: 100%;
+}
+
+.contacts-card {
+  width: 100%;
+  max-width: 1040px;
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 28px 32px;
+  box-shadow: 0 6px 24px rgba(15, 36, 64, 0.06);
+}
+
+/* Header */
+.contacts-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.eyebrow {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #94a3b8;
+  margin: 0 0 4px;
+}
+
+.contacts-header h2 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.subtitle {
+  margin: 6px 0 0;
+  color: #64748b;
+  font-size: 14px;
+}
+
+/* Search */
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f4f7f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 10px 14px;
+  min-width: 260px;
+}
+
+.search-box input {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 14px;
+  color: #1e293b;
+  width: 100%;
+}
+
+.search-icon {
+  color: #94a3b8;
+  font-size: 13px;
+}
+
+/* Info banner */
+.info-banner {
+  background: #fff7e6;
+  border: 1px solid #ffe2a8;
+  color: #92660b;
+  font-size: 13px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  margin-bottom: 16px;
+}
+
+/* Table */
+.table-wrap {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead th {
+  text-align: left;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #94a3b8;
+  font-weight: 700;
+  padding: 12px 16px;
+  border-bottom: 1px solid #eef2f6;
+}
+
+tbody td {
+  padding: 16px;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 14px;
+  color: #334155;
+  vertical-align: middle;
+}
+
+tbody tr:hover {
+  background: #fafcfd;
+}
+
+.action-col {
+  text-align: right;
+  width: 140px;
+}
+
+/* Name cell */
+.contact-name-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.contact-name {
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.contact-number {
+  color: #64748b;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Status badge */
+.status-badge {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 999px;
+}
+
+.status-badge.is-invited {
+  background: #e6f7ef;
+  color: #1f9d6c;
+}
+
+.status-badge.is-pending {
+  background: #eef2f6;
+  color: #64748b;
+}
+
+/* Invite button */
+.invite-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #4f7cff;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.invite-button:hover:not(:disabled) {
+  background: #3f68e0;
+}
+
+.invite-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.invite-icon {
+  font-size: 11px;
+}
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 48px 16px;
+  color: #94a3b8;
+}
+
+.empty-icon {
+  font-size: 28px;
+  color: #cbd5e1;
+  margin-bottom: 8px;
+}
+
+.empty-state p {
+  margin: 4px 0 2px;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.empty-state span {
+  font-size: 13px;
+}
+
+/* Footer */
+.contacts-footer {
+  margin-top: 16px;
+  font-size: 13px;
+  color: #94a3b8;
+}
+
+/* Skeleton loading */
+.skeleton-cell {
+  height: 14px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #f1f5f9 25%, #e9eef3 50%, #f1f5f9 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+}
+
+.skeleton-avatar-line {
+  width: 70%;
+}
+
+.skeleton-pill {
+  width: 60px;
+  border-radius: 999px;
+}
+
+.skeleton-button {
+  width: 80px;
+  height: 32px;
+  margin-left: auto;
+  border-radius: 8px;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .contacts-card {
+    padding: 20px;
+  }
+
+  .search-box {
+    min-width: 100%;
+  }
+
+  .action-col {
+    width: auto;
+  }
+}
+
+/* Send Template Modal */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+.send-modal-card {
+  width: 100%;
+  max-width: 420px;
+  background: #fff;
+  border-radius: 14px;
+  padding: 24px;
+  box-shadow: 0 12px 40px rgba(15, 23, 42, 0.15);
+}
+
+.send-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.send-modal-header h3 {
+  margin: 4px 0 2px;
+  font-size: 18px;
+  color: #1e293b;
+}
+
+.send-modal-number {
+  font-size: 13px;
+  color: #64748b;
+}
+
+.icon-button {
+  background: #f1f5f9;
+  border: none;
+  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  cursor: pointer;
+}
+
+.icon-button:hover {
+  background: #e2e8f0;
+}
+
+.send-modal-form label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 6px;
+}
+
+.send-modal-form textarea {
+  width: 100%;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 14px;
+  font-family: inherit;
+  resize: vertical;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.send-modal-form textarea:focus {
+  border-color: #4f7cff;
+}
+
+.send-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.secondary-button {
+  background: #f1f5f9;
+  color: #475569;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.secondary-button:hover:not(:disabled) {
+  background: #e2e8f0;
+}
+
+.secondary-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

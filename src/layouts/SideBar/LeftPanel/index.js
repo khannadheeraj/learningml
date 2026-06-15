@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaTachometerAlt } from 'react-icons/fa';
+import { FaTachometerAlt, FaAddressBook } from 'react-icons/fa';
 import { CNavItem } from '@coreui/react';
 
 import { FaPaperPlane, FaUsers} from 'react-icons/fa';
@@ -17,6 +17,8 @@ const menuList = [
   createNavItem('Upload Contacts', '/upload-contacts', FaUsers),
 
   createNavItem( 'Invitation', '/send-invitation', FaPaperPlane),
+
+  createNavItem('Manage Contacts', '/manage-contacts', FaAddressBook),
 
   // createNavItem('Test Invitations', '/test-send-invitation', FaPaperPlane)
 
