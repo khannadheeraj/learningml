@@ -12,11 +12,27 @@ import {
 } from "react-icons/fa";
 import "./manageContacts.css";
 
-const API_BASE_URL = (process.env.REACT_APP_recommendServiceURL || "http://127.0.0.1:8000").replace(/\/$/, "");
+const API_BASE_URL = (process.env.REACT_APP_recommendServiceURL).replace(/\/$/, "");
 const READ_STATUS_API = `${API_BASE_URL}/users/campaigns/read-status`;
 const PAGE_SIZE = 10;
-const DEFAULT_START_DATE = "2026-06-16";
-const DEFAULT_END_DATE = "2026-06-20";
+
+function formatInputDate(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function getDefaultDateRange() {
+  const today = new Date();
+  const yesterday = new Date(today);
+  yesterday.setDate(today.getDate() - 1);
+
+  return {
+    startDate: formatInputDate(yesterday),
+    endDate: formatInputDate(today),
+  };
+}
 
 function getInitials(name = "") {
   const parts = name.trim().split(" ").filter(Boolean);
@@ -100,13 +116,14 @@ function normalizeContactsResponse(data) {
 }
 
 export default function ContactsListPage() {
+  const defaultDateRange = useMemo(() => getDefaultDateRange(), []);
   const [contacts, setContacts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [startDate, setStartDate] = useState(DEFAULT_START_DATE);
-  const [endDate, setEndDate] = useState(DEFAULT_END_DATE);
-  const [draftStartDate, setDraftStartDate] = useState(DEFAULT_START_DATE);
-  const [draftEndDate, setDraftEndDate] = useState(DEFAULT_END_DATE);
+  const [startDate, setStartDate] = useState(defaultDateRange.startDate);
+  const [endDate, setEndDate] = useState(defaultDateRange.endDate);
+  const [draftStartDate, setDraftStartDate] = useState(defaultDateRange.startDate);
+  const [draftEndDate, setDraftEndDate] = useState(defaultDateRange.endDate);
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [page, setPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
@@ -251,10 +268,10 @@ export default function ContactsListPage() {
   }
 
   function resetDateRange() {
-    setStartDate(DEFAULT_START_DATE);
-    setEndDate(DEFAULT_END_DATE);
-    setDraftStartDate(DEFAULT_START_DATE);
-    setDraftEndDate(DEFAULT_END_DATE);
+    setStartDate(defaultDateRange.startDate);
+    setEndDate(defaultDateRange.endDate);
+    setDraftStartDate(defaultDateRange.startDate);
+    setDraftEndDate(defaultDateRange.endDate);
     setPage(1);
     setIsDatePickerOpen(false);
   }
