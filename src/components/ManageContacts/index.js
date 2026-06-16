@@ -1,19 +1,22 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { FaSearch, FaUserFriends, FaTimes, FaClipboardList } from "react-icons/fa";
+import {
+  FaSearch,
+  FaUserFriends,
+  FaTimes,
+  FaClipboardList,
+  FaCalendarAlt,
+  FaUndo,
+  FaChevronDown,
+} from "react-icons/fa";
 import "./manageContacts.css";
 
-const RECOMMEND_SERVICE_URL = process.env.REACT_APP_recommendServiceURL;
-
-const MOCK_CONTACTS = [
-  { id: "1", username: "Aarav Sharma", phoneNumber: "+91 98765 43210", isInteractionCompleted: false, notes: "" },
-  { id: "2", username: "Priya Nair", phoneNumber: "+91 91234 56789", isInteractionCompleted: true, notes: "Interested in premium plan." },
-  { id: "3", username: "Rohan Mehta", phoneNumber: "+91 99887 76655", isInteractionCompleted: false, notes: "" },
-  { id: "4", username: "Sneha Kapoor", phoneNumber: "+91 90011 22334", isInteractionCompleted: false, notes: "" },
-  { id: "5", username: "Vikram Singh", phoneNumber: "+91 98123 45678", isInteractionCompleted: true, notes: "Follow up next week." },
-  { id: "6", username: "Ananya Iyer", phoneNumber: "+91 97654 32109", isInteractionCompleted: false, notes: "" },
-];
+const API_BASE_URL = (process.env.REACT_APP_recommendServiceURL || "http://127.0.0.1:8000").replace(/\/$/, "");
+const READ_STATUS_API = `${API_BASE_URL}/users/campaigns/read-status`;
+const PAGE_SIZE = 10;
+const DEFAULT_START_DATE = "2026-06-16";
+const DEFAULT_END_DATE = "2026-06-20";
 
 function getInitials(name = "") {
   const parts = name.trim().split(" ").filter(Boolean);
@@ -28,40 +31,150 @@ function getAvatarColor(name = "") {
   return AVATAR_COLORS[sum % AVATAR_COLORS.length];
 }
 
+function getDateEpoch(date, endOfDay = false) {
+  if (!date) return undefined;
+
+  const dateTime = endOfDay ? `${date}T23:59:59.999` : `${date}T00:00:00.000`;
+  return new Date(dateTime).getTime();
+}
+
+function formatDateLabel(date) {
+  if (!date) return "";
+
+  return new Intl.DateTimeFormat("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  }).format(new Date(`${date}T00:00:00`));
+}
+
+function parseInteractionStatus(contact) {
+  const rawStatus =
+    contact.isInteractionCompleted ??
+    contact.interactionCompleted ??
+    contact.isRead ??
+    contact.read ??
+    contact.readStatus ??
+    contact.status ??
+    false;
+
+  if (typeof rawStatus === "string") {
+    return ["completed", "complete", "read", "true", "yes"].includes(rawStatus.toLowerCase());
+  }
+
+  return Boolean(rawStatus);
+}
+
+function normalizeContactsResponse(data) {
+  const contacts = Array.isArray(data)
+    ? data
+    : data?.users || data?.contacts || data?.campaigns || data?.readStatuses || data?.data || data?.results || [];
+
+  return contacts.map((contact, index) => {
+    const user = contact.user || contact.contact || {};
+    const username =
+      contact.username ||
+      contact.name ||
+      contact.fullName ||
+      user.username ||
+      user.name ||
+      user.fullName ||
+      "";
+    const phoneNumber =
+      contact.phoneNumber ||
+      contact.phone ||
+      contact.mobile ||
+      user.phoneNumber ||
+      user.phone ||
+      user.mobile ||
+      "";
+    return {
+      ...contact,
+      id: contact.id || contact._id || user.id || user._id || phoneNumber || `contact-${index}`,
+      username,
+      phoneNumber,
+      notes: contact.notes || contact.description || "",
+      isInteractionCompleted: parseInteractionStatus(contact),
+    };
+  });
+}
+
 export default function ContactsListPage() {
   const [contacts, setContacts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [usingMockData, setUsingMockData] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [startDate, setStartDate] = useState(DEFAULT_START_DATE);
+  const [endDate, setEndDate] = useState(DEFAULT_END_DATE);
+  const [draftStartDate, setDraftStartDate] = useState(DEFAULT_START_DATE);
+  const [draftEndDate, setDraftEndDate] = useState(DEFAULT_END_DATE);
+  const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
+  const [page, setPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const [serverTotalPages, setServerTotalPages] = useState(null);
+  const [hasNextPage, setHasNextPage] = useState(null);
+  const [hasPrevPage, setHasPrevPage] = useState(null);
+  const [message, setMessage] = useState("");
   const [activeContact, setActiveContact] = useState(null);
   const [noteText, setNoteText] = useState("");
   const [isSaving, setIsSaving] = useState(false);
 
-  useEffect(() => {
-    fetchContacts();
-  }, []);
-
-  async function fetchContacts() {
+  const fetchContacts = useCallback(async () => {
     setIsLoading(true);
+    setMessage("");
 
     try {
-      const response = await axios.get(`${RECOMMEND_SERVICE_URL}/users`);
-      const users = response.data?.users || response.data || [];
+      const response = await axios.get(READ_STATUS_API, {
+        params: {
+          page,
+          pageSize: PAGE_SIZE,
+          startDate: getDateEpoch(startDate),
+          endDate: getDateEpoch(endDate, true),
+        },
+      });
+      const fetchedContacts = normalizeContactsResponse(response.data);
+      const pagination = response.data?.pagination || response.data?.meta || {};
+      const totalFromResponse =
+        response.data?.total ||
+        response.data?.count ||
+        response.data?.totalCount ||
+        pagination?.totalRecords ||
+        pagination?.total ||
+        fetchedContacts.length;
+      const totalPagesFromResponse =
+        response.data?.totalPages || pagination?.totalPages || null;
 
-      if (users.length) {
-        setContacts(users);
-        setUsingMockData(false);
-      } else {
-        setContacts(MOCK_CONTACTS);
-        setUsingMockData(true);
-      }
+      setContacts(fetchedContacts);
+      setTotalCount(Number(totalFromResponse) || fetchedContacts.length);
+      setServerTotalPages(totalPagesFromResponse ? Number(totalPagesFromResponse) : null);
+      setHasNextPage(
+        typeof pagination?.hasNextPage === "boolean"
+          ? pagination.hasNextPage
+          : typeof pagination?.hasNext === "boolean"
+            ? pagination.hasNext
+            : response.data?.hasNextPage ?? null
+      );
+      setHasPrevPage(
+        typeof pagination?.hasPrevPage === "boolean"
+          ? pagination.hasPrevPage
+          : typeof pagination?.hasPrevious === "boolean"
+            ? pagination.hasPrevious
+            : response.data?.hasPrevPage ?? null
+      );
     } catch {
-      setContacts(MOCK_CONTACTS);
-      setUsingMockData(true);
+      setContacts([]);
+      setTotalCount(0);
+      setServerTotalPages(null);
+      setHasNextPage(null);
+      setHasPrevPage(null);
+      setMessage("Could not load contact read status. Please try again.");
     } finally {
       setIsLoading(false);
     }
-  }
+  }, [page, startDate, endDate]);
+
+  useEffect(() => {
+    fetchContacts();
+  }, [fetchContacts]);
 
   function openNotesModal(contact) {
     setActiveContact(contact);
@@ -89,13 +202,9 @@ export default function ContactsListPage() {
     const id = activeContact.id || activeContact._id || activeContact.phoneNumber;
 
     try {
-      if (!usingMockData) {
-        await axios.post(`${RECOMMEND_SERVICE_URL}/users/${id}/notes`, {
-          notes: noteText.trim(),
-        });
-      } else {
-        await new Promise((resolve) => setTimeout(resolve, 500));
-      }
+      await axios.post(`${API_BASE_URL}/users/${id}/notes`, {
+        notes: noteText.trim(),
+      });
 
       setContacts((current) =>
         current.map((item) =>
@@ -135,6 +244,34 @@ export default function ContactsListPage() {
     );
   }, [contacts, searchTerm]);
 
+  const totalPages = serverTotalPages || Math.max(1, Math.ceil((totalCount || contacts.length) / PAGE_SIZE));
+
+  function goToPage(nextPage) {
+    setPage(Math.min(totalPages, Math.max(1, nextPage)));
+  }
+
+  function resetDateRange() {
+    setStartDate(DEFAULT_START_DATE);
+    setEndDate(DEFAULT_END_DATE);
+    setDraftStartDate(DEFAULT_START_DATE);
+    setDraftEndDate(DEFAULT_END_DATE);
+    setPage(1);
+    setIsDatePickerOpen(false);
+  }
+
+  function openDatePicker() {
+    setDraftStartDate(startDate);
+    setDraftEndDate(endDate);
+    setIsDatePickerOpen((current) => !current);
+  }
+
+  function applyDateRange() {
+    setStartDate(draftStartDate);
+    setEndDate(draftEndDate);
+    setPage(1);
+    setIsDatePickerOpen(false);
+  }
+
   return (
     <main className="contacts-page">
       <section className="contacts-card">
@@ -145,20 +282,99 @@ export default function ContactsListPage() {
             <p className="subtitle">View your contacts and track interaction notes.</p>
           </div>
 
-          <div className="search-box">
-            <FaSearch className="search-icon" />
-            <input
-              type="text"
-              placeholder="Search by name or number"
-              value={searchTerm}
-              onChange={(event) => setSearchTerm(event.target.value)}
-            />
+          <div className="contacts-toolbar">
+            <label className="search-box" htmlFor="contacts-search">
+              <FaSearch className="search-icon" />
+              <input
+                id="contacts-search"
+                type="search"
+                placeholder="Search by name or number"
+                value={searchTerm}
+                onChange={(event) => setSearchTerm(event.target.value)}
+              />
+            </label>
+
+            <div className="date-filter">
+              <button
+                type="button"
+                className={`date-trigger ${isDatePickerOpen ? "is-open" : ""}`}
+                aria-label="Open date range filter"
+                aria-expanded={isDatePickerOpen}
+                onClick={openDatePicker}
+              >
+                <span className="date-trigger-icon">
+                  <FaCalendarAlt />
+                </span>
+                <span className="date-trigger-copy">
+                  <span>Date range</span>
+                  <strong>
+                    {formatDateLabel(startDate)} - {formatDateLabel(endDate)}
+                  </strong>
+                </span>
+                <FaChevronDown className="date-trigger-chevron" />
+              </button>
+
+              {isDatePickerOpen && (
+                <div className="date-popover">
+                  <div className="date-popover-header">
+                    <span>Filter by date</span>
+                    <button
+                      type="button"
+                      className="date-icon-button"
+                      aria-label="Close date range filter"
+                      onClick={() => setIsDatePickerOpen(false)}
+                    >
+                      <FaTimes />
+                    </button>
+                  </div>
+
+                  <div className="date-range-fields">
+                    <label className="date-field">
+                      <span>Start date</span>
+                      <input
+                        type="date"
+                        value={draftStartDate}
+                        max={draftEndDate}
+                        onChange={(event) => setDraftStartDate(event.target.value)}
+                      />
+                    </label>
+                    <label className="date-field">
+                      <span>End date</span>
+                      <input
+                        type="date"
+                        value={draftEndDate}
+                        min={draftStartDate}
+                        onChange={(event) => setDraftEndDate(event.target.value)}
+                      />
+                    </label>
+                  </div>
+
+                  <div className="date-popover-actions">
+                    <button
+                      type="button"
+                      className="date-secondary-button"
+                      onClick={resetDateRange}
+                    >
+                      <FaUndo />
+                      Reset
+                    </button>
+                    <button
+                      type="button"
+                      className="date-apply-button"
+                      onClick={applyDateRange}
+                    >
+                      Apply
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </header>
 
-        {usingMockData && !isLoading && (
-          <div className="info-banner">
-            Showing sample data — connect the contacts API to see live data.
+        {message && !isLoading && (
+          <div className="info-banner is-error">
+            {message}
           </div>
         )}
 
@@ -196,7 +412,7 @@ export default function ContactsListPage() {
                   <td colSpan={4} className="empty-state">
                     <FaUserFriends className="empty-icon" />
                     <p>No contacts found.</p>
-                    <span>Try a different search or upload a contact list.</span>
+                    <span>Try a different search or date range.</span>
                   </td>
                 </tr>
               )}
@@ -253,8 +469,29 @@ export default function ContactsListPage() {
         {!isLoading && filteredContacts.length > 0 && (
           <footer className="contacts-footer">
             <span>
-              Showing {filteredContacts.length} of {contacts.length} contacts
+              Showing {filteredContacts.length} of {totalCount || contacts.length} contacts
             </span>
+            <div className="pagination-controls">
+              <button
+                type="button"
+                className="pagination-btn"
+                disabled={typeof hasPrevPage === "boolean" ? !hasPrevPage : page === 1}
+                onClick={() => goToPage(page - 1)}
+              >
+                Previous
+              </button>
+              <span className="pagination-info">
+                Page <strong>{page}</strong> of <strong>{totalPages}</strong>
+              </span>
+              <button
+                type="button"
+                className="pagination-btn"
+                disabled={typeof hasNextPage === "boolean" ? !hasNextPage : page === totalPages}
+                onClick={() => goToPage(page + 1)}
+              >
+                Next
+              </button>
+            </div>
           </footer>
         )}
       </section>
