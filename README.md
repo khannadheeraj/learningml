@@ -1,5 +1,13 @@
 # Getting Started with Create React App
 
+## Reproducible dependency installation
+
+`package-lock.json` is intentionally tracked. It prevents npm from resolving incompatible transitive versions, including the TypeScript version incompatibility previously observed with Create React App 5.
+
+The current lockfile was generated and verified locally with Node `20.19.3` and npm `10.8.2`. Use `npm ci` for a clean reproducible install, then keep the existing `npm run build` deployment build command. The exact production Node/npm versions and install/publish commands still require read-only server verification.
+
+The only browser-exposed configuration currently required is `REACT_APP_recommendServiceURL`. Create React App injects it at build time. Never place `JWT_SECRET_KEY`, `WHATSAPP_APP_SECRET`, Meta access tokens, database credentials, or any other backend secret in `REACT_APP_*` variables.
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
