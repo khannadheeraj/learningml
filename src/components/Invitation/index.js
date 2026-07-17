@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import axios from "axios";
+import apiClient from "../../services/Apis/client";
 import { FaPaperPlane } from 'react-icons/fa';
 import './invitation.css';
 
@@ -94,7 +94,7 @@ export default function SendInvitationDashboard() {
 
     async function fetchCampaigns() {
       try {
-        const campaignsResponse = await axios.get(CAMPAIGNS_API);
+        const campaignsResponse = await apiClient.get(CAMPAIGNS_API);
         if (!cancelled && campaignsResponse?.status === 200) {
           setCampaigns(normalizeCampaignsResponse(campaignsResponse.data));
         }
@@ -123,7 +123,7 @@ export default function SendInvitationDashboard() {
         setIsLoading(true);
         setMessage("");
 
-        const usersResponse = await axios.get(USERS_API, {
+        const usersResponse = await apiClient.get(USERS_API, {
           params: {
             page,
             pageSize: PAGE_SIZE,
@@ -204,7 +204,7 @@ export default function SendInvitationDashboard() {
       setIsSending(true);
       setMessage("");
 
-      await axios.post(SEND_INVITATION_API, payload, {
+      await apiClient.post(SEND_INVITATION_API, payload, {
         headers: {
           "Content-Type": "application/json",
         },

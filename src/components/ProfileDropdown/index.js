@@ -1,19 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { CDropdown, CDropdownToggle, CDropdownMenu, CDropdownItem } from '@coreui/react';
 import { cilAccountLogout, cilEnvelopeOpen, cilSettings, cilUser } from '@coreui/icons';
 import {CDropdownDivider } from '@coreui/react-pro';
 import CIcon from '@coreui/icons-react';
-import { auth_service } from '../../auth/auth';
-
-const getStoredUserData = () => {
-    if (typeof window === 'undefined') return null;
-    try {
-        const stored = JSON.parse(localStorage.getItem('userData'));
-        return stored?.userData || stored || null;
-    } catch {
-        return null;
-    }
-};
+import { useAuth } from '../../auth/AuthProvider';
 
 const getAvatarUrl = (name, imageUrl) => {
     if (imageUrl) return imageUrl;
@@ -22,29 +12,13 @@ const getAvatarUrl = (name, imageUrl) => {
 };
 
 const ProfileDropdown = () => {
+    const { user, logout } = useAuth();
     const [visible, setVisible] = useState(false);
-    const [profile, setProfile] = useState({
-        name: 'Guest',
-        email: '',
-        avatar: getAvatarUrl('Guest'),
-    });
-
-    useEffect(() => {
-        const userData = getStoredUserData();
-        const displayName =
-            userData?.name ||
-            userData?.fullName ||
-            userData?.username ||
-            userData?.firstName ||
-            userData?.email ||
-            'Guest';
-        const email = userData?.email || userData?.username || '';
-        const avatar = getAvatarUrl(
-            displayName,
-            userData?.avatar || userData?.avatarUrl || userData?.profilePicture || userData?.image
-        );
-        setProfile({ name: displayName, email, avatar });
-    }, []);
+    const profile = {
+        name: user?.displayName || user?.email || 'User',
+        email: user?.email || '',
+        avatar: getAvatarUrl(user?.displayName || user?.email || 'User'),
+    };
 
     const handleToggle = () => {
         setVisible((prevVisible) => !prevVisible);
@@ -103,7 +77,7 @@ const ProfileDropdown = () => {
                 </div>
                 <CDropdownDivider className="my-2" />
                 <CDropdownItem
-                    onClick={() => auth_service.logout()}
+                    onClick={logout}
                     className="profile-dropdown-logout"
                 >
                     <CIcon icon={cilAccountLogout} className="me-2 text-danger" />

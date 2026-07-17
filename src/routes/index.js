@@ -1,7 +1,6 @@
 import React from 'react'
 
 const Dashboard = React.lazy(() => import('../components/Dashboard/index'))
-const LogOut = React.lazy(() => import('../components/LogOut/index'))
 const SendInvitationDashboard = React.lazy(() => import('../components/Invitation/index'))
 const UploadContacts = React.lazy(() => import('../components/UploadContacts/index'))
 const ManageContacts = React.lazy(() => import('../components/ManageContacts/index'))
@@ -11,11 +10,10 @@ const ManageContacts = React.lazy(() => import('../components/ManageContacts/ind
 const routes = [
     { path: '/', exact: true, name: 'Home', element: <Dashboard /> },
     { path: '/dashboard', name: 'Dashboard', element: <Dashboard /> },
-    { path: '/logout', name: 'Logout', element: <LogOut /> },
-    { path: '/upload-contacts', name: 'Upload Contacts', element: <UploadContacts /> },
-    { path: '/send-invitation', name: 'Send Invitation', element: <SendInvitationDashboard /> },
+    { path: '/upload-contacts', name: 'Upload Contacts', roles: ['SUPER_ADMIN'], element: <UploadContacts /> },
+    { path: '/send-invitation', name: 'Send Invitation', roles: ['SUPER_ADMIN'], element: <SendInvitationDashboard /> },
     // <Route path="/contacts" element={<ContactsListPage />} />
-    { path: '/manage-contacts', name: 'Send Invitation', element: <ManageContacts /> },
+    { path: '/manage-contacts', name: 'Send Invitation', roles: ['SUPER_ADMIN'], element: <ManageContacts /> },
 
     //  { path: '/test-send-invitation', name: 'Test Send Invitation', element: <TestSendInvitation /> },
 

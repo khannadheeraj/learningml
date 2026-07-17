@@ -1,6 +1,7 @@
 
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import React, { useCallback, useEffect, useState } from "react";
+import apiClient from "../../services/Apis/client";
+import { useAuth } from "../../auth/AuthProvider";
 
 import {
   CRow,
@@ -56,6 +57,7 @@ const campaigns = [
 
 
 const Dashboard = () => {
+  const { user } = useAuth();
   const CAMPAIGN_NAME =
     "upsc_orientation_may31";
 
@@ -81,8 +83,9 @@ const Dashboard = () => {
   const [page, setPage] =
     useState(0);
 
-  const fetchCampaignAnalytics =
+  const fetchCampaignAnalytics = useCallback(
     async (currentPage = 0) => {
+      if (user?.role !== 'SUPER_ADMIN') return;
       try {
         setIsLoading(true);
 
@@ -91,7 +94,7 @@ const Dashboard = () => {
             .REACT_APP_recommendServiceURL;
 
         const response =
-          await axios.get(
+          await apiClient.get(
             `${BASE_URL}/analytics/campaign/${CAMPAIGN_NAME}?page=${currentPage}&size=${PAGE_SIZE}`
           );
 
@@ -111,11 +114,11 @@ const Dashboard = () => {
       } finally {
         setIsLoading(false);
       }
-    };
+    }, [user?.role]);
 
   useEffect(() => {
     fetchCampaignAnalytics(page);
-  }, [page]);
+  }, [page, fetchCampaignAnalytics]);
 
   const getStatusColor = (
     status
@@ -201,6 +204,17 @@ const Dashboard = () => {
           100
         ).toFixed(1)
       : 0;
+
+  if (user?.role !== 'SUPER_ADMIN') {
+    return (
+      <div className="container-fluid p-4">
+        <CCard className="border-0 shadow-sm"><CCardBody>
+          <h2>Welcome, {user?.displayName}</h2>
+          <p className="text-secondary mb-0">Your counsellor workspace is secured and ready for the lead features introduced in later phases.</p>
+        </CCardBody></CCard>
+      </div>
+    );
+  }
 
   return (
     <div className="container-fluid p-4 dashboard-page">

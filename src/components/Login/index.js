@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import axios from 'axios';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import {
     CContainer,
@@ -25,10 +25,14 @@ import {
 
 
 import { validateEmail } from '../../utils/utils';
-import { auth_service } from '../../auth/auth';
+import { useAuth } from '../../auth/AuthProvider';
+import { getSafeApiMessage } from '../../services/Apis/client';
 
 
 const Login = () => {
+    const { login, sessionExpired } = useAuth();
+    const navigate = useNavigate();
+    const location = useLocation();
 
     const [formValues, setFormValues] = useState({
         email: '',
@@ -119,52 +123,14 @@ const Login = () => {
 
             setErrors({});
 
-            const BASE_URL =
-                process.env.REACT_APP_recommendServiceURL;
-
-            const response = await axios.post(
-                `${BASE_URL}/admin/login`,
-                {
-                    emailId: formValues.email,
-                    password: formValues.password
-                }
-            );
-
-            const responseData = response?.data;
-
-            // ==========================================
-            // Save Session
-            // ==========================================
-
-            auth_service.setSessionData(
-                responseData,
-                responseData?.userData
-            );
-
-            // Save JWT Token
-            localStorage.setItem(
-                'adminToken',
-                responseData?.token
-            );
-
-            // Redirect
-            window.location.href = '/dashboard';
+            const user = await login(formValues.email, formValues.password);
+            navigate(user?.mustChangePassword ? '/change-password' : '/dashboard', { replace: true });
 
         } catch (error) {
 
-            console.error(
-                'Login Error:',
-                error
-            );
-
             setErrors({
-                common:
-                    error?.response?.data?.detail ||
-                    error?.response?.data?.message ||
-                    'Invalid email or password'
+                common: getSafeApiMessage(error, 'Invalid email or password.')
             });
-
-            auth_service.clearData();
 
         } finally {
 
@@ -247,9 +213,9 @@ const Login = () => {
 
                                         </div>
 
-                                        {errors?.common && (
+                                        {(errors?.common || sessionExpired || location.state?.passwordChanged) && (
                                             <div className="alert alert-danger text-center py-2">
-                                                {errors?.common}
+                                                {errors?.common || (sessionExpired ? 'Your session expired. Please sign in again.' : 'Password changed. Sign in with your new password.')}
                                             </div>
                                         )}
 

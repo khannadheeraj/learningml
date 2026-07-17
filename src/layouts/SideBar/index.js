@@ -4,8 +4,11 @@ import SimpleBar from 'simplebar-react';
 import 'simplebar/dist/simplebar.min.css';
 import { SideBarNav } from './SideBarNav';
 import navigation from '../SideBar/LeftPanel/index';
+import { useAuth } from '../../auth/AuthProvider';
 
 const SideBar = ({ sidebarShow, setSidebarShow }) => {
+  const { user } = useAuth();
+  const allowedNavigation = navigation.filter((item) => !item.roles || item.roles.includes(user?.role));
   return (
     <CSidebar
       position="fixed"
@@ -22,7 +25,7 @@ const SideBar = ({ sidebarShow, setSidebarShow }) => {
       </div>
       <CSidebarNav>
         <SimpleBar>
-          <SideBarNav items={navigation} />
+          <SideBarNav items={allowedNavigation} />
         </SimpleBar>
       </CSidebarNav>
     </CSidebar>

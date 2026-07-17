@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import axios from "axios";
+import apiClient from "../../services/Apis/client";
 import { toast } from "react-toastify";
 import {
   FaSearch,
@@ -140,7 +140,7 @@ export default function ContactsListPage() {
     setMessage("");
 
     try {
-      const response = await axios.get(READ_STATUS_API, {
+      const response = await apiClient.get(READ_STATUS_API, {
         params: {
           page,
           pageSize: PAGE_SIZE,
@@ -219,7 +219,7 @@ export default function ContactsListPage() {
     const id = activeContact.id || activeContact._id || activeContact.phoneNumber;
 
     try {
-      await axios.post(`${API_BASE_URL}/users/${id}/notes`, {
+      await apiClient.post(`${API_BASE_URL}/users/${id}/notes`, {
         notes: noteText.trim(),
       });
 

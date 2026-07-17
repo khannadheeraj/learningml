@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import axios from "axios";
+import apiClient from "../../services/Apis/client";
 import * as XLSX from "xlsx";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -154,7 +154,7 @@ export default function UploadContacts() {
     try {
       setIsUploading(true);
 
-      const response = await axios.post(
+      const response = await apiClient.post(
         `${UPLOAD_CONTACTS_API}/users/bulk-upload`,
         payload,
         {

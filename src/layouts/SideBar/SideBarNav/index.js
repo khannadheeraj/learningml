@@ -21,7 +21,7 @@ export const SideBarNav = ({ items }) => {
   }
 
   const navItem = (item, index) => {
-    const { component, name, badge, icon, ...rest } = item
+    const { component, name, badge, icon, roles, ...rest } = item
     const Component = component
     return (
       <Component
