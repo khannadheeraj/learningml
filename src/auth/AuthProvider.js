@@ -10,6 +10,8 @@ import apiClient, {
 
 const AuthContext = createContext(null);
 
+export const authenticatedUserFromResponse = (response) => response?.data?.data?.user ?? null;
+
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isBootstrapping, setIsBootstrapping] = useState(true);
@@ -32,7 +34,7 @@ export const AuthProvider = ({ children }) => {
       try {
         await refreshAccessToken();
         const response = await apiClient.get('/auth/me');
-        if (active) setUser(response.data.data.user);
+        if (active) setUser(authenticatedUserFromResponse(response));
       } catch {
         if (active) clearSession(false);
       } finally {
@@ -46,10 +48,11 @@ export const AuthProvider = ({ children }) => {
   const login = useCallback(async (emailId, password) => {
     const response = await apiClient.post('/auth/login', { emailId, password });
     const data = response.data.data;
+    const authenticatedUser = authenticatedUserFromResponse(response);
     setAccessToken(data.accessToken);
-    setUser(data.user);
+    setUser(authenticatedUser);
     setSessionExpired(false);
-    return data.user;
+    return authenticatedUser;
   }, []);
 
   const logout = useCallback(async () => {

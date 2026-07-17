@@ -16,4 +16,5 @@ const menuList = [
   item('Reassignment Requests', '/reassignment-requests', FaExchangeAlt),
   item('Staff Users', '/staff-users', FaUserTie, ['SUPER_ADMIN']),
 ];
+export const navigationForRole = (role) => menuList.filter((entry) => !entry.roles || entry.roles.includes(role));
 export default menuList;

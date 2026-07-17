@@ -14,14 +14,14 @@ jest.mock('../services/Apis/client', () => ({
 
 const Probe = () => {
   const auth = useAuth();
-  return <div><span>{auth.isBootstrapping ? 'loading' : auth.user?.email || 'anonymous'}</span><button onClick={auth.logout}>Logout probe</button></div>;
+  return <div><span>{auth.isBootstrapping ? 'loading' : auth.user ? `${auth.user.id}|${auth.user.email}|${auth.user.role}|${String(Boolean(auth.user.user))}` : 'anonymous'}</span><button onClick={auth.logout}>Logout probe</button></div>;
 };
 
-test('loads the current user after restoring a refresh session', async () => {
+test('normalizes GET /auth/me to the direct authenticated user shape', async () => {
   refreshAccessToken.mockResolvedValue({ accessToken: 'access' });
-  apiClient.get.mockResolvedValue({ data: { data: { user: { email: 'admin@example.com' } } } });
+  apiClient.get.mockResolvedValue({ data: { data: { user: { id: 'admin-id', displayName: 'Admin', email: 'admin@example.com', role: 'SUPER_ADMIN' } } } });
   render(<AuthProvider><Probe /></AuthProvider>);
-  await waitFor(() => expect(screen.getByText('admin@example.com')).toBeInTheDocument());
+  await waitFor(() => expect(screen.getByText('admin-id|admin@example.com|SUPER_ADMIN|false')).toBeInTheDocument());
   expect(apiClient.get).toHaveBeenCalledWith('/auth/me');
 });
 
@@ -33,10 +33,10 @@ test('failed initial refresh finishes anonymously', async () => {
 
 test('logout calls the backend and clears the current user', async () => {
   refreshAccessToken.mockResolvedValue({ accessToken: 'access' });
-  apiClient.get.mockResolvedValue({ data: { data: { user: { email: 'admin@example.com' } } } });
+  apiClient.get.mockResolvedValue({ data: { data: { user: { id: 'admin-id', email: 'admin@example.com', role: 'SUPER_ADMIN' } } } });
   apiClient.post.mockResolvedValue({ data: { data: { loggedOut: true } } });
   render(<AuthProvider><Probe /></AuthProvider>);
-  await waitFor(() => expect(screen.getByText('admin@example.com')).toBeInTheDocument());
+  await waitFor(() => expect(screen.getByText('admin-id|admin@example.com|SUPER_ADMIN|false')).toBeInTheDocument());
   fireEvent.click(screen.getByRole('button', { name: 'Logout probe' }));
   await waitFor(() => expect(screen.getByText('anonymous')).toBeInTheDocument());
   expect(apiClient.post).toHaveBeenCalledWith('/auth/logout');

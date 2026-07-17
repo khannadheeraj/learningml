@@ -26,4 +26,5 @@ const routes = [
   { path: '/reassignment-requests', name: 'Reassignment Requests', roles: allRoles, element: <ReassignmentRequests /> },
   { path: '/staff-users', name: 'Staff Users', roles: admin, element: <StaffUsers /> },
 ];
+export const routesForRole = (role) => routes.filter((route) => !route.roles || route.roles.includes(role));
 export default routes;
