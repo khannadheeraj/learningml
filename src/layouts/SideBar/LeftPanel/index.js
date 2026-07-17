@@ -1,30 +1,19 @@
 import React from 'react';
-import { FaTachometerAlt, FaAddressBook } from 'react-icons/fa';
+import { FaAddressBook, FaExchangeAlt, FaFileImport, FaPlus, FaTachometerAlt, FaUserTie, FaUsers } from 'react-icons/fa';
 import { CNavItem } from '@coreui/react';
 
-import { FaPaperPlane, FaUsers} from 'react-icons/fa';
-
-const createNavItem = (name, to, IconComponent, roles = ['SUPER_ADMIN', 'COUNSELLOR']) => ({
-  component: CNavItem,
-  name,
-  to,
-  icon: <IconComponent className="nav-icon" style={{ color: '#0c4b61' }} />, 
-  roles,
-});
-
+const item = (name, to, Icon, roles = ['SUPER_ADMIN', 'COUNSELLOR']) => ({ component: CNavItem, name, to, icon: <Icon className="nav-icon" style={{ color: '#0c4b61' }}/>, roles });
 const menuList = [
-  createNavItem('Dashboard', '/dashboard', FaTachometerAlt),
-
-  createNavItem('Upload Contacts', '/upload-contacts', FaUsers, ['SUPER_ADMIN']),
-
-  createNavItem( 'Invitation', '/send-invitation', FaPaperPlane, ['SUPER_ADMIN']),
-
-  createNavItem('Manage Contacts', '/manage-contacts', FaAddressBook, ['SUPER_ADMIN']),
-
-  // createNavItem('Test Invitations', '/test-send-invitation', FaPaperPlane)
-
-
-  // createNavItem('Logout', '/logout', FaSignOutAlt),
+  item('Dashboard', '/dashboard', FaTachometerAlt),
+  item('All Contacts', '/contacts', FaAddressBook, ['SUPER_ADMIN']),
+  item('Add Contact', '/contacts/new', FaPlus),
+  item('Import Contacts', '/contacts/import', FaFileImport, ['SUPER_ADMIN']),
+  item('All Leads', '/leads', FaUsers, ['SUPER_ADMIN']),
+  item('Unassigned Leads', '/leads/unassigned', FaUsers, ['SUPER_ADMIN']),
+  item('Needs Contact', '/leads/needs-contact', FaUsers, ['SUPER_ADMIN']),
+  item('Interested Leads', '/leads/interested', FaUsers, ['SUPER_ADMIN']),
+  item('My Leads', '/my-leads', FaUserTie, ['COUNSELLOR']),
+  item('Reassignment Requests', '/reassignment-requests', FaExchangeAlt),
+  item('Staff Users', '/staff-users', FaUserTie, ['SUPER_ADMIN']),
 ];
-
 export default menuList;

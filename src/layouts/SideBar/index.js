@@ -17,10 +17,10 @@ const SideBar = ({ sidebarShow, setSidebarShow }) => {
       className="custom-sidebar"
     >
       <div className="sidebar-brand">
-        <div className="brand-avatar">LM</div>
+        <div className="brand-avatar">GI</div>
         <div className="brand-content">
-          <div className="brand-name">LearningML</div>
-          <div className="brand-subtitle">Modern analytics dashboard</div>
+          <div className="brand-name">GEO IAS</div>
+          <div className="brand-subtitle">Admission CRM</div>
         </div>
       </div>
       <CSidebarNav>

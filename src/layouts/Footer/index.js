@@ -10,7 +10,7 @@ const Footer = () => {
         <span className="ms-1">
           &copy; 2026 -{' '}
           <span className="fw-semibold">
-            WhatsApp Campaigns
+            GEO IAS Admission CRM
           </span>
         </span>
       </div>
