@@ -46,7 +46,10 @@ export const confirmWhatsAppBroadcast = (broadcastId, version) => apiClient.post
 export const executeWhatsAppBroadcastBatch = (broadcastId, batchSize) => apiClient.post(`/whatsapp-broadcasts/${broadcastId}/execute-batch`, { batchSize });
 export const getWhatsAppBroadcastExecution = (broadcastId) => apiClient.get(`/whatsapp-broadcasts/${broadcastId}/execution`);
 export const getWhatsAppBroadcastAnalytics = (broadcastId) => apiClient.get(`/whatsapp-broadcasts/${broadcastId}/analytics`);
-export const listWhatsAppBroadcastReport = (broadcastId, params) => apiClient.get(`/whatsapp-broadcasts/${broadcastId}/report`, { params });
+export const listWhatsAppBroadcastReport = (broadcastId, params = {}) => {
+  const query = Object.fromEntries(Object.entries(params).filter(([key, value]) => !['executionStatus', 'deliveryStatus'].includes(key) || Boolean(value)));
+  return apiClient.get(`/whatsapp-broadcasts/${broadcastId}/report`, { params: query });
+};
 export const getWhatsAppBroadcastRecipient = (broadcastId, recipientId) => apiClient.get(`/whatsapp-broadcasts/${broadcastId}/recipients/${recipientId}`);
 export const scheduleWhatsAppBroadcast = (broadcastId, payload) => apiClient.post(`/whatsapp-broadcasts/${broadcastId}/schedule`, payload);
 export const getWhatsAppBroadcastSchedule = (broadcastId) => apiClient.get(`/whatsapp-broadcasts/${broadcastId}/schedule`);

@@ -41,6 +41,14 @@ test('WhatsApp template catalogue calls reuse the authenticated shared API clien
   getWhatsAppBroadcastAnalytics('broadcast-id'); listWhatsAppBroadcastReport('broadcast-id', { deliveryStatus: 'READ', page: 2 }); getWhatsAppBroadcastRecipient('broadcast-id', 'recipient-id');
   expect(apiClient.get).toHaveBeenCalledWith('/whatsapp-broadcasts/broadcast-id/analytics');
   expect(apiClient.get).toHaveBeenCalledWith('/whatsapp-broadcasts/broadcast-id/report', { params: { deliveryStatus: 'READ', page: 2 } });
+  listWhatsAppBroadcastReport('broadcast-id', { executionStatus: '', deliveryStatus: '', page: 1, pageSize: 25 });
+  listWhatsAppBroadcastReport('broadcast-id', { executionStatus: 'ACCEPTED', deliveryStatus: '', page: 1, pageSize: 25 });
+  listWhatsAppBroadcastReport('broadcast-id', { executionStatus: '', deliveryStatus: 'READ', page: 1, pageSize: 25 });
+  listWhatsAppBroadcastReport('broadcast-id', { executionStatus: 'ACCEPTED', deliveryStatus: 'READ', page: 1, pageSize: 25 });
+  expect(apiClient.get).toHaveBeenCalledWith('/whatsapp-broadcasts/broadcast-id/report', { params: { page: 1, pageSize: 25 } });
+  expect(apiClient.get).toHaveBeenCalledWith('/whatsapp-broadcasts/broadcast-id/report', { params: { executionStatus: 'ACCEPTED', page: 1, pageSize: 25 } });
+  expect(apiClient.get).toHaveBeenCalledWith('/whatsapp-broadcasts/broadcast-id/report', { params: { deliveryStatus: 'READ', page: 1, pageSize: 25 } });
+  expect(apiClient.get).toHaveBeenCalledWith('/whatsapp-broadcasts/broadcast-id/report', { params: { executionStatus: 'ACCEPTED', deliveryStatus: 'READ', page: 1, pageSize: 25 } });
   expect(apiClient.get).toHaveBeenCalledWith('/whatsapp-broadcasts/broadcast-id/recipients/recipient-id');
   scheduleWhatsAppBroadcast('broadcast-id', { version: 4, scheduledFor: '2030-01-01T00:00:00.000Z' }); getWhatsAppBroadcastSchedule('broadcast-id'); unscheduleWhatsAppBroadcast('broadcast-id', 4);
   expect(apiClient.post).toHaveBeenCalledWith('/whatsapp-broadcasts/broadcast-id/schedule', { version: 4, scheduledFor: '2030-01-01T00:00:00.000Z' });

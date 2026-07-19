@@ -47,8 +47,15 @@ test('shows separate analytics, filters the safe delivery report, and opens a bo
   expect(await screen.findByText('Delivery analytics')).toBeInTheDocument(); expect(screen.getByText('Execution outcome')).toBeInTheDocument(); expect(screen.getByText('Delivery progression')).toBeInTheDocument();
   expect(screen.getByText('Read').parentElement).toHaveTextContent('1');
   fireEvent.click(screen.getByRole('button', { name: 'Refresh' })); await waitFor(() => expect(crm.getWhatsAppBroadcastAnalytics).toHaveBeenCalledWith('broadcast-id'));
+  await waitFor(() => expect(screen.getByRole('button', { name: 'Apply filters' })).toBeEnabled());
   fireEvent.change(screen.getByLabelText('Delivery status'), { target: { value: 'READ' } }); fireEvent.click(screen.getByRole('button', { name: 'Apply filters' }));
-  await waitFor(() => expect(crm.listWhatsAppBroadcastReport).toHaveBeenLastCalledWith('broadcast-id', { executionStatus: '', deliveryStatus: 'READ', page: 1, pageSize: 25 }));
+  await waitFor(() => expect(crm.listWhatsAppBroadcastReport).toHaveBeenLastCalledWith('broadcast-id', { deliveryStatus: 'READ', page: 1, pageSize: 25 }));
+  await waitFor(() => expect(screen.getByRole('button', { name: 'Apply filters' })).toBeEnabled());
+  fireEvent.change(screen.getByLabelText('Execution status'), { target: { value: 'ACCEPTED' } }); fireEvent.click(screen.getByRole('button', { name: 'Apply filters' }));
+  await waitFor(() => expect(crm.listWhatsAppBroadcastReport).toHaveBeenLastCalledWith('broadcast-id', { executionStatus: 'ACCEPTED', deliveryStatus: 'READ', page: 1, pageSize: 25 }));
+  await waitFor(() => expect(screen.getByRole('button', { name: 'Apply filters' })).toBeEnabled());
+  fireEvent.change(screen.getByLabelText('Execution status'), { target: { value: '' } }); fireEvent.change(screen.getByLabelText('Delivery status'), { target: { value: '' } }); fireEvent.click(screen.getByRole('button', { name: 'Apply filters' }));
+  await waitFor(() => expect(crm.listWhatsAppBroadcastReport).toHaveBeenLastCalledWith('broadcast-id', { page: 1, pageSize: 25 }));
   expect(screen.getAllByText('919876543210').length).toBeGreaterThan(0); await waitFor(() => expect(screen.getByRole('button', { name: 'View timeline' })).toBeEnabled()); fireEvent.click(screen.getByRole('button', { name: 'View timeline' }));
   expect(await screen.findByText('Recipient delivery detail')).toBeInTheDocument(); expect(screen.getByText('Delivery timeline')).toBeInTheDocument(); expect(screen.getAllByText('READ').length).toBeGreaterThan(0);
 });
