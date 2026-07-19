@@ -64,6 +64,8 @@ export const createFollowUp = (payload) => apiClient.post('/follow-ups', payload
 export const updateFollowUp = (followUpId, payload) => apiClient.patch(`/follow-ups/${followUpId}`, payload);
 export const completeFollowUp = (followUpId, payload) => apiClient.post(`/follow-ups/${followUpId}/complete`, payload);
 export const cancelFollowUp = (followUpId, payload) => apiClient.post(`/follow-ups/${followUpId}/cancel`, payload);
+export const getFollowUpWorkQueue = (params) => apiClient.get('/follow-ups/work-queue', { params });
+export const getFollowUpWorkQueueSummary = (params) => apiClient.get('/follow-ups/work-queue/summary', { params });
 
 export const analyzeContactImport = (file) => {
   const form = new FormData();
