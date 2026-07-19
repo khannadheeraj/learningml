@@ -69,15 +69,17 @@ const WhatsAppTemplateSendPanel = ({ contactId, contact, preferences, activeLead
 
   const isAdmin = user?.role === 'SUPER_ADMIN';
   const isAssignedCounsellor = user?.role === 'COUNSELLOR' && activeLead?.assignedCounsellorId === user?.id;
-  const canSend = isAdmin || isAssignedCounsellor;
+  const canViewPanel = isAdmin || isAssignedCounsellor;
   const fields = useMemo(() => templateVariableFields(template), [template]);
-  const eligibilityReason = !canSend ? 'Only a Super Admin or this Contact’s assigned Counsellor can send a template.'
+  const contactEligibilityReason = !canViewPanel ? 'Only a Super Admin or this Contact’s assigned Counsellor can send a template.'
     : preferences?.doNotContact ? 'This Contact is suppressed by the do-not-contact preference.'
       : preferences?.whatsappAllowed === false ? 'This Contact has not allowed WhatsApp communication.'
         : !contact?.isActive ? 'This Contact is inactive.'
           : !validWhatsAppPhone(contact?.normalizedPhone) ? 'This Contact does not have a valid WhatsApp phone number.'
-            : template?.category === 'MARKETING' && preferences?.marketingAllowed === false ? 'This Contact has not allowed marketing communication.'
-              : '';
+            : '';
+  const templateConsentReason = template?.category === 'MARKETING' && preferences?.marketingAllowed === false
+    ? 'This Contact has not allowed marketing communication.' : '';
+  const eligibilityReason = contactEligibilityReason || templateConsentReason;
   const eligible = !eligibilityReason;
 
   const loadTemplates = async () => {
@@ -120,7 +122,7 @@ const WhatsAppTemplateSendPanel = ({ contactId, contact, preferences, activeLead
     } finally { setSending(false); }
   };
 
-  if (!canSend) return null;
+  if (!canViewPanel) return null;
   return <CCard className="crm-section"><CCardHeader>Send WhatsApp Template</CCardHeader><CCardBody>
     {!eligible && <CAlert color="warning">{eligibilityReason}</CAlert>}
     {loadingTemplates && <LoadingState label="Loading approved templates…" />}

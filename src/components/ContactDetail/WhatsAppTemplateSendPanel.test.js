@@ -58,3 +58,21 @@ test('does not render the action for an unassigned Counsellor and blocks suppres
   rerender(<WhatsAppTemplateSendPanel contactId="contact-id" contact={contact} preferences={{ ...preferences, doNotContact: true }} activeLead={null} user={admin} />);
   expect(await screen.findByText(/suppressed/i)).toBeInTheDocument();
 });
+
+test('shows the panel to a Super Admin and applies marketing consent only after a marketing template is selected', async () => {
+  const marketingTemplate = { ...template, id: 'marketing-id', category: 'MARKETING' };
+  crm.listWhatsAppTemplates.mockResolvedValue({ data: { data: [template, marketingTemplate] } });
+  crm.getWhatsAppTemplate.mockImplementation((id) => Promise.resolve({ data: { data: id === 'marketing-id' ? marketingTemplate : template } }));
+  render(<WhatsAppTemplateSendPanel contactId="contact-id" contact={contact} preferences={{ ...preferences, marketingAllowed: false }} activeLead={{ assignedCounsellorId: 'other-id' }} user={admin} />);
+  expect(await screen.findByText('Send WhatsApp Template')).toBeInTheDocument();
+  expect(screen.queryByText(/marketing communication/i)).not.toBeInTheDocument();
+  fireEvent.change(await screen.findByLabelText('Approved template'), { target: { value: 'template-id' } });
+  await screen.findByLabelText('Header variable {{1}}');
+  fireEvent.change(screen.getByLabelText('Header variable {{1}}'), { target: { value: 'Asha' } });
+  fireEvent.change(screen.getByLabelText('Body variable {{1}}'), { target: { value: 'July' } });
+  fireEvent.change(screen.getByLabelText('Dynamic URL button variable {{1}}'), { target: { value: 'token' } });
+  expect(screen.getByRole('button', { name: 'Send WhatsApp Template' })).toBeEnabled();
+  fireEvent.change(screen.getByLabelText('Approved template'), { target: { value: 'marketing-id' } });
+  expect(await screen.findByText(/has not allowed marketing communication/i)).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'Send WhatsApp Template' })).toBeDisabled();
+});
