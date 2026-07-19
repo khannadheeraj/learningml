@@ -48,6 +48,9 @@ export const getWhatsAppBroadcastExecution = (broadcastId) => apiClient.get(`/wh
 export const getWhatsAppBroadcastAnalytics = (broadcastId) => apiClient.get(`/whatsapp-broadcasts/${broadcastId}/analytics`);
 export const listWhatsAppBroadcastReport = (broadcastId, params) => apiClient.get(`/whatsapp-broadcasts/${broadcastId}/report`, { params });
 export const getWhatsAppBroadcastRecipient = (broadcastId, recipientId) => apiClient.get(`/whatsapp-broadcasts/${broadcastId}/recipients/${recipientId}`);
+export const scheduleWhatsAppBroadcast = (broadcastId, payload) => apiClient.post(`/whatsapp-broadcasts/${broadcastId}/schedule`, payload);
+export const getWhatsAppBroadcastSchedule = (broadcastId) => apiClient.get(`/whatsapp-broadcasts/${broadcastId}/schedule`);
+export const unscheduleWhatsAppBroadcast = (broadcastId, version) => apiClient.delete(`/whatsapp-broadcasts/${broadcastId}/schedule`, { params: { version } });
 export const retryWhatsAppBroadcastFailures = (broadcastId, version) => apiClient.post(`/whatsapp-broadcasts/${broadcastId}/retry-failures`, { version });
 export const cancelWhatsAppBroadcast = (broadcastId, version) => apiClient.post(`/whatsapp-broadcasts/${broadcastId}/cancel`, { version });
 

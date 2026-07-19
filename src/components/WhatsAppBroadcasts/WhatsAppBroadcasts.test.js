@@ -1,18 +1,21 @@
 import React from 'react';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import WhatsAppBroadcasts from './index';
 import * as crm from '../../services/Apis/crm';
 
-jest.mock('../../services/Apis/crm', () => ({ listWhatsAppTemplates: jest.fn(), createWhatsAppBroadcast: jest.fn(), prepareWhatsAppBroadcast: jest.fn(), listWhatsAppBroadcastRecipients: jest.fn(), deleteWhatsAppBroadcast: jest.fn(), confirmWhatsAppBroadcast: jest.fn(), executeWhatsAppBroadcastBatch: jest.fn(), getWhatsAppBroadcastExecution: jest.fn(), getWhatsAppBroadcastAnalytics: jest.fn(), listWhatsAppBroadcastReport: jest.fn(), getWhatsAppBroadcastRecipient: jest.fn(), retryWhatsAppBroadcastFailures: jest.fn(), cancelWhatsAppBroadcast: jest.fn() }));
+jest.mock('../../services/Apis/crm', () => ({ listWhatsAppTemplates: jest.fn(), createWhatsAppBroadcast: jest.fn(), prepareWhatsAppBroadcast: jest.fn(), listWhatsAppBroadcastRecipients: jest.fn(), deleteWhatsAppBroadcast: jest.fn(), confirmWhatsAppBroadcast: jest.fn(), executeWhatsAppBroadcastBatch: jest.fn(), getWhatsAppBroadcastExecution: jest.fn(), getWhatsAppBroadcastAnalytics: jest.fn(), listWhatsAppBroadcastReport: jest.fn(), getWhatsAppBroadcastRecipient: jest.fn(), retryWhatsAppBroadcastFailures: jest.fn(), cancelWhatsAppBroadcast: jest.fn(), getWhatsAppBroadcastSchedule: jest.fn(), scheduleWhatsAppBroadcast: jest.fn(), unscheduleWhatsAppBroadcast: jest.fn() }));
 
 const template = { id: 'template-id', name: 'welcome', language: 'en_US', category: 'MARKETING', headers: [{ text: 'Hello {{1}}' }], body: { text: 'Mode: {{1}}' }, footer: { text: 'GEO IAS' }, buttons: [] };
 const draft = { id: 'broadcast-id', version: 1, status: 'DRAFT', templateName: 'welcome', templateLanguage: 'en_US', templateCategory: 'MARKETING', preparationCounts: { eligible: 0, skipped: 0, rejected: 0, byReason: {} } };
 const prepared = { ...draft, version: 2, preparedAt: '2026-07-19T10:00:00Z', preparationCounts: { eligible: 2, skipped: 1, rejected: 1, byReason: { DO_NOT_CONTACT: 1 } } };
 const execution = { broadcastId: 'broadcast-id', status: 'EXECUTING', version: 3, totals: { accepted: 1, retryableFailure: 1, finalFailure: 0, remaining: 2, processing: 1, skipped: 1 } };
+const notStartedExecution = { broadcastId: 'broadcast-id', status: 'EXECUTING', version: 3, totals: { accepted: 0, retryableFailure: 0, finalFailure: 0, remaining: 2, processing: 0, skipped: 1, processed: 0 } };
+const unscheduled = { broadcastId: 'broadcast-id', broadcastStatus: 'EXECUTING', version: 3, schedulerState: 'UNSCHEDULED', scheduledFor: null, nextRunAt: null };
 const analytics = { broadcastId: 'broadcast-id', status: 'EXECUTING', totals: { totalPrepared: 4, eligible: 2, skipped: 1, rejected: 1, pending: 1, processing: 0, accepted: 0, sent: 0, delivered: 1, read: 1, failedRetryable: 0, failedFinal: 0, cancelled: 0 } };
 const reportRecipient = { id: 'recipient-id', displayName: 'Asha', phone: '919876543210', renderedText: 'Hello Asha', executionStatus: 'ACCEPTED', deliveryStatus: 'READ', acceptedAt: '2026-07-19T10:00:00Z', readAt: '2026-07-19T11:00:00Z' };
 
-beforeEach(() => { jest.clearAllMocks(); window.confirm = jest.fn(() => true); crm.listWhatsAppTemplates.mockResolvedValue({ data: { data: [template] } }); crm.createWhatsAppBroadcast.mockResolvedValue({ data: { data: draft } }); crm.prepareWhatsAppBroadcast.mockResolvedValue({ data: { data: prepared } }); crm.listWhatsAppBroadcastRecipients.mockResolvedValue({ data: { data: [{ id: 'recipient-id', displayName: 'Asha', normalizedPhone: '919876543210', renderedText: 'Hello Asha', status: 'ACCEPTED', executionStatus: 'ACCEPTED' }], pagination: { page: 1, totalPages: 1 } } }); crm.confirmWhatsAppBroadcast.mockResolvedValue({ data: { data: execution } }); crm.executeWhatsAppBroadcastBatch.mockResolvedValue({ data: { data: { ...execution, totals: { ...execution.totals, accepted: 2, remaining: 1, processing: 0 }, batch: { claimed: 1 } } } }); crm.getWhatsAppBroadcastExecution.mockResolvedValue({ data: { data: execution } }); crm.getWhatsAppBroadcastAnalytics.mockResolvedValue({ data: { data: analytics } }); crm.listWhatsAppBroadcastReport.mockResolvedValue({ data: { data: [reportRecipient], pagination: { page: 1, totalPages: 1 } } }); crm.getWhatsAppBroadcastRecipient.mockResolvedValue({ data: { data: { ...reportRecipient, timeline: [{ status: 'ACCEPTED', at: '2026-07-19T10:00:00Z' }, { status: 'READ', at: '2026-07-19T11:00:00Z' }] } } }); crm.retryWhatsAppBroadcastFailures.mockResolvedValue({ data: { data: execution } }); crm.cancelWhatsAppBroadcast.mockResolvedValue({ data: { data: { ...execution, status: 'CANCELLED', totals: { ...execution.totals, remaining: 0 } } } }); });
+beforeEach(() => { cleanup(); jest.clearAllMocks(); window.confirm = jest.fn(() => true); crm.listWhatsAppTemplates.mockResolvedValue({ data: { data: [template] } }); crm.createWhatsAppBroadcast.mockResolvedValue({ data: { data: draft } }); crm.prepareWhatsAppBroadcast.mockResolvedValue({ data: { data: prepared } }); crm.listWhatsAppBroadcastRecipients.mockResolvedValue({ data: { data: [{ id: 'recipient-id', displayName: 'Asha', normalizedPhone: '919876543210', renderedText: 'Hello Asha', status: 'ACCEPTED', executionStatus: 'ACCEPTED' }], pagination: { page: 1, totalPages: 1 } } }); crm.confirmWhatsAppBroadcast.mockResolvedValue({ data: { data: execution } }); crm.executeWhatsAppBroadcastBatch.mockResolvedValue({ data: { data: { ...execution, totals: { ...execution.totals, accepted: 2, remaining: 1, processing: 0 }, batch: { claimed: 1 } } } }); crm.getWhatsAppBroadcastExecution.mockResolvedValue({ data: { data: execution } }); crm.getWhatsAppBroadcastAnalytics.mockResolvedValue({ data: { data: analytics } }); crm.listWhatsAppBroadcastReport.mockResolvedValue({ data: { data: [reportRecipient], pagination: { page: 1, totalPages: 1 } } }); crm.getWhatsAppBroadcastRecipient.mockResolvedValue({ data: { data: { ...reportRecipient, timeline: [{ status: 'ACCEPTED', at: '2026-07-19T10:00:00Z' }, { status: 'READ', at: '2026-07-19T11:00:00Z' }] } } }); crm.retryWhatsAppBroadcastFailures.mockResolvedValue({ data: { data: execution } }); crm.cancelWhatsAppBroadcast.mockResolvedValue({ data: { data: { ...execution, status: 'CANCELLED', totals: { ...execution.totals, remaining: 0 } } } }); crm.getWhatsAppBroadcastSchedule.mockResolvedValue({ data: { data: unscheduled } }); });
+afterEach(cleanup);
 
 async function createAndPrepare() {
   render(<WhatsAppBroadcasts />); await screen.findByText('Create broadcast draft');
@@ -61,4 +64,55 @@ test('shows a clear optimistic-version conflict without duplicate control action
   crm.confirmWhatsAppBroadcast.mockRejectedValue({ response: { status: 409 } });
   await createAndPrepare(); fireEvent.click(screen.getByLabelText(/I understand that confirmation freezes/i)); fireEvent.click(screen.getByRole('button', { name: 'Confirm and start execution' }));
   expect(await screen.findByText(/changed elsewhere/i)).toBeInTheDocument(); expect(crm.executeWhatsAppBroadcastBatch).not.toHaveBeenCalled();
+});
+
+function futureLocalInput(hours = 2) { return hours === 2 ? '2099-01-01T10:30' : '2099-01-01T11:30'; }
+
+async function openSchedulableBroadcast() {
+  crm.confirmWhatsAppBroadcast.mockResolvedValue({ data: { data: notStartedExecution } });
+  crm.getWhatsAppBroadcastExecution.mockResolvedValue({ data: { data: notStartedExecution } });
+  await createAndPrepare();
+  fireEvent.click(screen.getByLabelText(/I understand that confirmation freezes/i));
+  fireEvent.click(screen.getByRole('button', { name: 'Confirm and start execution' }));
+  await screen.findByText('Broadcast schedule');
+}
+
+test('schedules, displays, reschedules, and removes a future broadcast schedule', async () => {
+  const firstSchedule = { ...unscheduled, version: 4, schedulerState: 'SCHEDULED', scheduledFor: '2030-01-01T10:30:00.000Z', nextRunAt: '2030-01-01T10:30:00.000Z' };
+  const secondSchedule = { ...firstSchedule, version: 5, scheduledFor: '2030-01-01T11:30:00.000Z', nextRunAt: '2030-01-01T11:30:00.000Z' };
+  crm.scheduleWhatsAppBroadcast.mockResolvedValueOnce({ data: { data: firstSchedule } }).mockResolvedValueOnce({ data: { data: secondSchedule } });
+  crm.unscheduleWhatsAppBroadcast.mockResolvedValue({ data: { data: { ...unscheduled, version: 6 } } });
+  await openSchedulableBroadcast();
+  await waitFor(() => expect(screen.getByLabelText('Future local date and time')).toHaveValue(''));
+  fireEvent.click(screen.getByRole('button', { name: 'Refresh schedule' }));
+  await waitFor(() => expect(crm.getWhatsAppBroadcastSchedule).toHaveBeenCalledWith('broadcast-id'));
+  await waitFor(() => expect(screen.getByRole('button', { name: 'Schedule broadcast' })).toBeEnabled());
+  fireEvent.change(screen.getByLabelText('Future local date and time'), { target: { value: futureLocalInput() } });
+  await waitFor(() => expect(screen.getByLabelText('Future local date and time')).toHaveValue(futureLocalInput()));
+  fireEvent.click(screen.getByRole('button', { name: 'Schedule broadcast' }));
+  await waitFor(() => expect(crm.scheduleWhatsAppBroadcast).toHaveBeenCalledWith('broadcast-id', expect.objectContaining({ version: 3, scheduledFor: expect.stringMatching(/Z$/) })));
+  expect(await screen.findByText('SCHEDULED')).toBeInTheDocument();
+  expect(screen.getByText(/Scheduled for:/)).toBeInTheDocument();
+  await waitFor(() => expect(screen.getByRole('button', { name: 'Reschedule broadcast' })).toBeEnabled());
+  fireEvent.change(screen.getByLabelText('Future local date and time'), { target: { value: futureLocalInput(3) } });
+  await waitFor(() => expect(screen.getByLabelText('Future local date and time')).toHaveValue(futureLocalInput(3)));
+  fireEvent.click(screen.getByRole('button', { name: 'Reschedule broadcast' }));
+  await waitFor(() => expect(crm.scheduleWhatsAppBroadcast).toHaveBeenLastCalledWith('broadcast-id', expect.objectContaining({ version: 4 })));
+  await waitFor(() => expect(screen.getByRole('button', { name: 'Remove schedule' })).toBeEnabled());
+  fireEvent.click(screen.getByRole('button', { name: 'Remove schedule' }));
+  await waitFor(() => expect(crm.unscheduleWhatsAppBroadcast).toHaveBeenCalledWith('broadcast-id', 5));
+  expect(await screen.findByText('UNSCHEDULED')).toBeInTheDocument();
+});
+
+test('rejects a past local schedule before calling the API and blocks scheduling after execution starts', async () => {
+  await openSchedulableBroadcast();
+  await waitFor(() => expect(screen.getByRole('button', { name: 'Schedule broadcast' })).toBeEnabled());
+  fireEvent.change(screen.getByLabelText('Future local date and time'), { target: { value: '2020-01-01T00:00' } });
+  await waitFor(() => expect(screen.getByLabelText('Future local date and time')).toHaveValue('2020-01-01T00:00'));
+  fireEvent.click(screen.getByRole('button', { name: 'Schedule broadcast' }));
+  await waitFor(() => expect(screen.getAllByText('Choose a future local date and time.').length).toBeGreaterThan(0));
+  expect(crm.scheduleWhatsAppBroadcast).not.toHaveBeenCalled();
+  crm.getWhatsAppBroadcastExecution.mockResolvedValue({ data: { data: execution } });
+  fireEvent.click(screen.getByRole('button', { name: 'Run next batch' }));
+  await waitFor(() => expect(screen.queryByRole('button', { name: 'Schedule broadcast' })).not.toBeInTheDocument());
 });

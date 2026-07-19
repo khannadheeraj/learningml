@@ -1,7 +1,7 @@
 import apiClient from './client';
 import {
   analyzeContactImport, createContact, getWhatsAppTemplate, listContacts,
-  cancelWhatsAppBroadcast, confirmWhatsAppBroadcast, createWhatsAppBroadcast, deleteWhatsAppBroadcast, executeWhatsAppBroadcastBatch, getWhatsAppBroadcast, getWhatsAppBroadcastAnalytics, getWhatsAppBroadcastExecution, getWhatsAppBroadcastRecipient, listWhatsAppBroadcastRecipients, listWhatsAppBroadcastReport, listWhatsAppTemplates, listWhatsAppConversations, listWhatsAppConversationMessages, markWhatsAppConversationViewed, prepareWhatsAppBroadcast, retryWhatsAppBroadcastFailures, sendWhatsAppTemplate, syncWhatsAppTemplates, updateStaffUser,
+  cancelWhatsAppBroadcast, confirmWhatsAppBroadcast, createWhatsAppBroadcast, deleteWhatsAppBroadcast, executeWhatsAppBroadcastBatch, getWhatsAppBroadcast, getWhatsAppBroadcastAnalytics, getWhatsAppBroadcastExecution, getWhatsAppBroadcastRecipient, getWhatsAppBroadcastSchedule, listWhatsAppBroadcastRecipients, listWhatsAppBroadcastReport, listWhatsAppTemplates, listWhatsAppConversations, listWhatsAppConversationMessages, markWhatsAppConversationViewed, prepareWhatsAppBroadcast, retryWhatsAppBroadcastFailures, scheduleWhatsAppBroadcast, sendWhatsAppTemplate, syncWhatsAppTemplates, unscheduleWhatsAppBroadcast, updateStaffUser,
 } from './crm';
 
 jest.mock('./client', () => ({ get: jest.fn(), post: jest.fn(), patch: jest.fn(), delete: jest.fn() }));
@@ -42,6 +42,10 @@ test('WhatsApp template catalogue calls reuse the authenticated shared API clien
   expect(apiClient.get).toHaveBeenCalledWith('/whatsapp-broadcasts/broadcast-id/analytics');
   expect(apiClient.get).toHaveBeenCalledWith('/whatsapp-broadcasts/broadcast-id/report', { params: { deliveryStatus: 'READ', page: 2 } });
   expect(apiClient.get).toHaveBeenCalledWith('/whatsapp-broadcasts/broadcast-id/recipients/recipient-id');
+  scheduleWhatsAppBroadcast('broadcast-id', { version: 4, scheduledFor: '2030-01-01T00:00:00.000Z' }); getWhatsAppBroadcastSchedule('broadcast-id'); unscheduleWhatsAppBroadcast('broadcast-id', 4);
+  expect(apiClient.post).toHaveBeenCalledWith('/whatsapp-broadcasts/broadcast-id/schedule', { version: 4, scheduledFor: '2030-01-01T00:00:00.000Z' });
+  expect(apiClient.get).toHaveBeenCalledWith('/whatsapp-broadcasts/broadcast-id/schedule');
+  expect(apiClient.delete).toHaveBeenCalledWith('/whatsapp-broadcasts/broadcast-id/schedule', { params: { version: 4 } });
   listWhatsAppConversations({ unreadOnly: true }); listWhatsAppConversationMessages('conversation-id', { cursor: 'cursor' }); markWhatsAppConversationViewed('conversation-id');
   expect(apiClient.get).toHaveBeenCalledWith('/whatsapp-conversations', { params: { unreadOnly: true } });
   expect(apiClient.get).toHaveBeenCalledWith('/whatsapp-conversations/conversation-id/messages', { params: { cursor: 'cursor' } });
