@@ -16,6 +16,7 @@ const menuList = [
   item('Reassignment Requests', '/reassignment-requests', FaExchangeAlt),
   item('WhatsApp Templates', '/whatsapp-templates', FaWhatsapp),
   item('WhatsApp Inbox', '/whatsapp-inbox', FaWhatsapp),
+  item('WhatsApp Broadcasts', '/whatsapp-broadcasts', FaWhatsapp, ['SUPER_ADMIN']),
   item('Staff Users', '/staff-users', FaUserTie, ['SUPER_ADMIN']),
 ];
 export const navigationForRole = (role) => menuList.filter((entry) => !entry.roles || entry.roles.includes(role));

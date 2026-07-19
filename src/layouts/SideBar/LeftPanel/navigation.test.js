@@ -3,7 +3,7 @@ import navigation, { navigationForRole } from './index';
 test('Super Admin navigation includes every Phase 1B administrator workflow', () => {
   expect(navigationForRole('SUPER_ADMIN').map((item) => item.name)).toEqual([
     'Dashboard', 'All Contacts', 'Add Contact', 'Import Contacts', 'All Leads',
-    'Unassigned Leads', 'Needs Contact', 'Interested Leads', 'Reassignment Requests', 'WhatsApp Templates', 'WhatsApp Inbox', 'Staff Users',
+    'Unassigned Leads', 'Needs Contact', 'Interested Leads', 'Reassignment Requests', 'WhatsApp Templates', 'WhatsApp Inbox', 'WhatsApp Broadcasts', 'Staff Users',
   ]);
 });
 

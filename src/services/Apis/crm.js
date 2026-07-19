@@ -37,6 +37,11 @@ export const listWhatsAppConversations = (params) => apiClient.get('/whatsapp-co
 export const listWhatsAppConversationMessages = (conversationId, params) => apiClient.get(`/whatsapp-conversations/${conversationId}/messages`, { params });
 export const markWhatsAppConversationViewed = (conversationId) => apiClient.post(`/whatsapp-conversations/${conversationId}/view`);
 export const sendWhatsAppConversationReply = (conversationId, text, idempotencyKey) => apiClient.post(`/whatsapp-conversations/${conversationId}/replies`, { text }, { headers: { 'Idempotency-Key': idempotencyKey } });
+export const createWhatsAppBroadcast = (payload) => apiClient.post('/whatsapp-broadcasts', payload);
+export const getWhatsAppBroadcast = (broadcastId) => apiClient.get(`/whatsapp-broadcasts/${broadcastId}`);
+export const prepareWhatsAppBroadcast = (broadcastId, version) => apiClient.post(`/whatsapp-broadcasts/${broadcastId}/prepare`, { version });
+export const listWhatsAppBroadcastRecipients = (broadcastId, params) => apiClient.get(`/whatsapp-broadcasts/${broadcastId}/recipients`, { params });
+export const deleteWhatsAppBroadcast = (broadcastId, version) => apiClient.delete(`/whatsapp-broadcasts/${broadcastId}`, { params: { version } });
 
 export const analyzeContactImport = (file) => {
   const form = new FormData();

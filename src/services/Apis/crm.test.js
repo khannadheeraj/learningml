@@ -1,10 +1,10 @@
 import apiClient from './client';
 import {
   analyzeContactImport, createContact, getWhatsAppTemplate, listContacts,
-  listWhatsAppTemplates, listWhatsAppConversations, listWhatsAppConversationMessages, markWhatsAppConversationViewed, sendWhatsAppTemplate, syncWhatsAppTemplates, updateStaffUser,
+  createWhatsAppBroadcast, deleteWhatsAppBroadcast, getWhatsAppBroadcast, listWhatsAppBroadcastRecipients, listWhatsAppTemplates, listWhatsAppConversations, listWhatsAppConversationMessages, markWhatsAppConversationViewed, prepareWhatsAppBroadcast, sendWhatsAppTemplate, syncWhatsAppTemplates, updateStaffUser,
 } from './crm';
 
-jest.mock('./client', () => ({ get: jest.fn(), post: jest.fn(), patch: jest.fn() }));
+jest.mock('./client', () => ({ get: jest.fn(), post: jest.fn(), patch: jest.fn(), delete: jest.fn() }));
 
 beforeEach(() => jest.clearAllMocks());
 
@@ -26,6 +26,12 @@ test('WhatsApp template catalogue calls reuse the authenticated shared API clien
   expect(apiClient.get).toHaveBeenCalledWith('/whatsapp-templates/template-id');
   expect(apiClient.post).toHaveBeenCalledWith('/whatsapp-templates/sync');
   expect(apiClient.post).toHaveBeenCalledWith('/whatsapp-template-sends', { contactId: 'contact-id', templateId: 'template-id', variableValues: ['Asha'] }, { headers: { 'Idempotency-Key': 'idempotency-key' } });
+  createWhatsAppBroadcast({ templateId: 'template-id' }); getWhatsAppBroadcast('broadcast-id'); prepareWhatsAppBroadcast('broadcast-id', 3); listWhatsAppBroadcastRecipients('broadcast-id', { status: 'ELIGIBLE' }); deleteWhatsAppBroadcast('broadcast-id', 3);
+  expect(apiClient.post).toHaveBeenCalledWith('/whatsapp-broadcasts', { templateId: 'template-id' });
+  expect(apiClient.get).toHaveBeenCalledWith('/whatsapp-broadcasts/broadcast-id');
+  expect(apiClient.post).toHaveBeenCalledWith('/whatsapp-broadcasts/broadcast-id/prepare', { version: 3 });
+  expect(apiClient.get).toHaveBeenCalledWith('/whatsapp-broadcasts/broadcast-id/recipients', { params: { status: 'ELIGIBLE' } });
+  expect(apiClient.delete).toHaveBeenCalledWith('/whatsapp-broadcasts/broadcast-id', { params: { version: 3 } });
   listWhatsAppConversations({ unreadOnly: true }); listWhatsAppConversationMessages('conversation-id', { cursor: 'cursor' }); markWhatsAppConversationViewed('conversation-id');
   expect(apiClient.get).toHaveBeenCalledWith('/whatsapp-conversations', { params: { unreadOnly: true } });
   expect(apiClient.get).toHaveBeenCalledWith('/whatsapp-conversations/conversation-id/messages', { params: { cursor: 'cursor' } });
