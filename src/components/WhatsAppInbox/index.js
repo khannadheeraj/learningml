@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { CBadge, CButton, CCard, CCardBody, CCardHeader, CCol, CFormInput, CFormLabel, CFormSelect, CRow } from '@coreui/react';
+import { CBadge, CButton, CCard, CCardBody, CCardHeader, CCol, CFormInput, CFormLabel, CFormSelect, CFormTextarea, CRow } from '@coreui/react';
 import { useSearchParams } from 'react-router-dom';
 
-import { listWhatsAppConversationMessages, listWhatsAppConversations, markWhatsAppConversationViewed } from '../../services/Apis/crm';
+import { listWhatsAppConversationMessages, listWhatsAppConversations, markWhatsAppConversationViewed, sendWhatsAppConversationReply } from '../../services/Apis/crm';
 import { apiMessage, EmptyState, ErrorState, formatDate, labelFor, LoadingState, PaginationControls, StatusBadge } from '../Crm/common';
 import '../Crm/crm.css';
 
@@ -22,6 +22,7 @@ const WhatsAppInbox = () => {
   const [messagePage, setMessagePage] = useState(null);
   const [messageLoading, setMessageLoading] = useState(false);
   const [messageError, setMessageError] = useState('');
+  const [reply, setReply] = useState(''); const [replyKey, setReplyKey] = useState(null); const [replying, setReplying] = useState(false);
 
   useEffect(() => { setFilters(params); }, [params]);
   const load = useCallback(async () => {
@@ -44,6 +45,7 @@ const WhatsAppInbox = () => {
     try { await markWhatsAppConversationViewed(conversation.id); setConversations((current) => current.map((item) => item.id === conversation.id ? { ...item, unreadCount: 0 } : item)); setSelected((current) => current ? { ...current, unreadCount: 0 } : current); }
     catch (requestError) { setMessageError(apiMessage(requestError, 'The conversation was opened, but could not be marked viewed.')); }
   };
+  const sendReply = async () => { const currentKey = replyKey || `reply-${Date.now()}-${Math.random()}`; setReplyKey(currentKey); setReplying(true); try { const response = await sendWhatsAppConversationReply(selected.id, reply, currentKey); setMessages((current) => [...current, response.data.data.message]); setReply(''); setReplyKey(null); } catch (requestError) { setMessageError(apiMessage(requestError, 'Reply could not be sent.')); } finally { setReplying(false); } };
 
   return <main className="crm-page"><div className="crm-page-header"><div><h1>WhatsApp Inbox</h1><p>Read-only conversation history for authorized CRM staff.</p></div></div>
     <CCard className="crm-section"><CCardBody><form className="crm-toolbar" onSubmit={apply}><div><CFormLabel htmlFor="inbox-search">Contact or phone</CFormLabel><CFormInput id="inbox-search" value={filters.search} onChange={(e) => setFilters((current) => ({ ...current, search: e.target.value }))} /></div><div><CFormLabel htmlFor="inbox-reconciliation">Reconciliation</CFormLabel><CFormSelect id="inbox-reconciliation" value={filters.reconciliationStatus} onChange={(e) => setFilters((current) => ({ ...current, reconciliationStatus: e.target.value }))}><option value="">All conversations</option><option value="MATCHED">Matched</option><option value="UNKNOWN_NUMBER">Unknown number</option></CFormSelect></div><div><CFormLabel htmlFor="inbox-unread">Unread</CFormLabel><CFormSelect id="inbox-unread" value={String(filters.unreadOnly)} onChange={(e) => setFilters((current) => ({ ...current, unreadOnly: e.target.value === 'true' }))}><option value="false">All</option><option value="true">Unread only</option></CFormSelect></div><div><CButton type="submit">Apply</CButton></div><div><CButton type="button" variant="outline" onClick={() => setSearchParams({})}>Clear</CButton></div></form></CCardBody></CCard>

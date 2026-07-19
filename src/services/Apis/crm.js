@@ -36,6 +36,7 @@ export const sendWhatsAppTemplate = (payload, idempotencyKey) => apiClient.post(
 export const listWhatsAppConversations = (params) => apiClient.get('/whatsapp-conversations', { params });
 export const listWhatsAppConversationMessages = (conversationId, params) => apiClient.get(`/whatsapp-conversations/${conversationId}/messages`, { params });
 export const markWhatsAppConversationViewed = (conversationId) => apiClient.post(`/whatsapp-conversations/${conversationId}/view`);
+export const sendWhatsAppConversationReply = (conversationId, text, idempotencyKey) => apiClient.post(`/whatsapp-conversations/${conversationId}/replies`, { text }, { headers: { 'Idempotency-Key': idempotencyKey } });
 
 export const analyzeContactImport = (file) => {
   const form = new FormData();
