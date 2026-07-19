@@ -8,6 +8,8 @@ const LeadList = React.lazy(() => import('../components/LeadList'));
 const ContactImport = React.lazy(() => import('../components/ContactImport'));
 const ReassignmentRequests = React.lazy(() => import('../components/ReassignmentRequests'));
 const StaffUsers = React.lazy(() => import('../components/StaffUsers'));
+const WhatsAppTemplates = React.lazy(() => import('../components/WhatsAppTemplates'));
+const WhatsAppTemplateDetail = React.lazy(() => import('../components/WhatsAppTemplates/Detail'));
 
 const allRoles = ['SUPER_ADMIN', 'COUNSELLOR'];
 const admin = ['SUPER_ADMIN'];
@@ -25,6 +27,8 @@ const routes = [
   { path: '/my-leads', name: 'My Leads', roles: ['COUNSELLOR'], element: <LeadList title="My Leads" /> },
   { path: '/reassignment-requests', name: 'Reassignment Requests', roles: allRoles, element: <ReassignmentRequests /> },
   { path: '/staff-users', name: 'Staff Users', roles: admin, element: <StaffUsers /> },
+  { path: '/whatsapp-templates', name: 'WhatsApp Templates', roles: allRoles, element: <WhatsAppTemplates /> },
+  { path: '/whatsapp-templates/:templateId', name: 'WhatsApp Template Preview', roles: allRoles, element: <WhatsAppTemplateDetail /> },
 ];
 export const routesForRole = (role) => routes.filter((route) => !route.roles || route.roles.includes(role));
 export default routes;

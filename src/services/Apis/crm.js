@@ -27,6 +27,10 @@ export const resetStaffPassword = (userId, payload) => apiClient.post(`/users/${
 
 export const getDashboardSummary = () => apiClient.get('/dashboards/summary');
 
+export const listWhatsAppTemplates = (params) => apiClient.get('/whatsapp-templates', { params });
+export const getWhatsAppTemplate = (templateId) => apiClient.get(`/whatsapp-templates/${templateId}`);
+export const syncWhatsAppTemplates = () => apiClient.post('/whatsapp-templates/sync');
+
 export const analyzeContactImport = (file) => {
   const form = new FormData();
   form.append('file', file);

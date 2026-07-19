@@ -20,6 +20,15 @@
 .crm-definition-grid dd { margin: .2rem 0 0; color: #1e293b; overflow-wrap: anywhere; }
 .crm-actions { display: flex; flex-wrap: wrap; gap: .5rem; }
 .crm-form-actions { display: flex; justify-content: flex-end; gap: .6rem; margin-top: 1rem; }
+.template-preview { border: 1px solid #d9e4ea; border-radius: .75rem; background: #f8fbfc; overflow: hidden; }
+.template-preview-section { padding: 1rem 1.1rem; border-bottom: 1px solid #d9e4ea; white-space: pre-wrap; overflow-wrap: anywhere; }
+.template-preview-section:last-child { border-bottom: 0; }
+.template-preview-label { display: block; margin-bottom: .4rem; font-size: .72rem; color: #64748b; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+.template-preview-body { background: #fff; min-height: 100px; }
+.template-variable { display: inline-block; padding: 0 .22rem; border-radius: .2rem; background: #e0f2fe; color: #075985; font-weight: 700; }
+.template-buttons { display: flex; flex-wrap: wrap; gap: .5rem; }
+.template-button { border: 1px solid #9cc9d9; border-radius: .35rem; padding: .42rem .65rem; background: #fff; color: #0c4b61; font-size: .88rem; }
+.template-meta { color: #64748b; font-size: .86rem; }
 .crm-timeline { list-style: none; padding: 0; margin: 0; }
 .crm-timeline li { border-left: 3px solid #dce8ee; padding: 0 0 1rem 1rem; margin-left: .35rem; }
 .crm-timeline li::before { content: ''; display: block; width: .65rem; height: .65rem; border-radius: 50%; background: #0c4b61; transform: translate(-1.39rem, .55rem); }
