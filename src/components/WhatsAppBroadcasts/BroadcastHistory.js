@@ -2,11 +2,11 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { CAlert, CButton, CCard, CCardBody, CCardHeader, CCol, CFormInput, CFormLabel, CFormSelect, CRow, CTable, CTableBody, CTableDataCell, CTableHead, CTableHeaderCell, CTableRow } from '@coreui/react';
 
 import { listWhatsAppBroadcasts } from '../../services/Apis/crm';
-import { apiMessage, EmptyState, LoadingState, PaginationControls } from '../Crm/common';
+import { apiMessage, EmptyState, formatDate, LoadingState, PaginationControls } from '../Crm/common';
 
 const states = ['DRAFT', 'PREPARING', 'CONFIRMED', 'EXECUTING', 'PAUSED_RETRYABLE', 'COMPLETED', 'CANCELLED'];
 const schedulerStates = ['UNSCHEDULED', 'SCHEDULED', 'RUNNING', 'WAITING_RETRY', 'COMPLETED', 'CANCELLED'];
-const formatTime = (value) => value ? new Date(value).toLocaleString() : '—';
+const formatTime = (value) => formatDate(value, true);
 const isoDate = (value, endOfDay = false) => value ? new Date(`${value}T${endOfDay ? '23:59:59.999' : '00:00:00'}`).toISOString() : undefined;
 
 const BroadcastHistory = ({ onOpen }) => {

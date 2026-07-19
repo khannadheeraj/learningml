@@ -1,14 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { CButton, CCol, CFormInput, CFormLabel, CFormSelect, CFormTextarea, CRow } from '@coreui/react';
+import { localDateTimeToUtcIso, toLocalDateTimeInput } from '../Crm/common';
 
 export const FOLLOW_UP_TYPES = ['CALL', 'WHATSAPP', 'MEETING', 'DOCUMENT', 'PAYMENT', 'GENERAL'];
 export const FOLLOW_UP_PRIORITIES = ['LOW', 'MEDIUM', 'HIGH', 'URGENT'];
 
-export const localDateTime = (value) => {
-  if (!value) return '';
-  const date = new Date(value); const offset = date.getTimezoneOffset() * 60000;
-  return new Date(date.getTime() - offset).toISOString().slice(0, 16);
-};
+export const localDateTime = toLocalDateTimeInput;
 
 export const FollowUpForm = ({ task, contactId, assignedCounsellorId, counsellors = [], admin, onSubmit, saving, submitLabel = 'Save follow-up' }) => {
   const [form, setForm] = useState({});
@@ -25,7 +22,7 @@ export const FollowUpForm = ({ task, contactId, assignedCounsellorId, counsellor
     if (!form.contactId || !form.assignedCounsellorId || !form.purpose.trim() || !form.dueAt) { setError('Contact, counsellor, purpose and due date/time are required.'); return; }
     const due = new Date(form.dueAt);
     if (Number.isNaN(due.getTime()) || due <= new Date()) { setError('Choose a future due date and time.'); return; }
-    onSubmit({ ...form, purpose: form.purpose.trim(), internalNote: form.internalNote.trim() || undefined, dueAt: due.toISOString() });
+    onSubmit({ ...form, purpose: form.purpose.trim(), internalNote: form.internalNote.trim() || undefined, dueAt: localDateTimeToUtcIso(form.dueAt) });
   };
   return <form onSubmit={submit} aria-label="Follow-up form"><CRow className="g-3">
     <CCol md={admin ? 4 : 6}><CFormLabel>Type</CFormLabel><CFormSelect value={form.type} onChange={(e) => change('type', e.target.value)}>{FOLLOW_UP_TYPES.map((value) => <option key={value}>{value}</option>)}</CFormSelect></CCol>

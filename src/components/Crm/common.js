@@ -19,13 +19,32 @@ export const labelFor = (value) => value
   ? String(value).toLowerCase().split('_').map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join(' ')
   : '—';
 
+export const parseApiDateTime = (value) => {
+  if (!value || typeof value !== 'string') return value ? new Date(value) : null;
+  const normalized = /^\d{4}-\d{2}-\d{2}T/.test(value) && !/(Z|[+-]\d{2}:?\d{2})$/i.test(value) ? `${value}Z` : value;
+  return new Date(normalized);
+};
+
 export const formatDate = (value, withTime = false) => {
   if (!value) return '—';
-  const parsed = new Date(value);
+  const parsed = parseApiDateTime(value);
   if (Number.isNaN(parsed.getTime())) return '—';
   return new Intl.DateTimeFormat('en-IN', withTime
-    ? { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Kolkata' }
-    : { dateStyle: 'medium', timeZone: 'Asia/Kolkata' }).format(parsed);
+    ? { dateStyle: 'medium', timeStyle: 'short' }
+    : { dateStyle: 'medium' }).format(parsed);
+};
+
+export const toLocalDateTimeInput = (value) => {
+  const date = parseApiDateTime(value);
+  if (!date || Number.isNaN(date.getTime())) return '';
+  const pad = (number) => String(number).padStart(2, '0');
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+};
+
+export const localDateTimeToUtcIso = (value) => {
+  if (!value || /^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date.toISOString();
 };
 
 const badgeColor = (value) => ({

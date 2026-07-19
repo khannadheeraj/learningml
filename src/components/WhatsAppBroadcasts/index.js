@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { CAlert, CButton, CCard, CCardBody, CCardHeader, CCol, CFormCheck, CFormInput, CFormLabel, CFormSelect, CRow, CTable, CTableBody, CTableDataCell, CTableHead, CTableHeaderCell, CTableRow } from '@coreui/react';
 
 import { cancelWhatsAppBroadcast, confirmWhatsAppBroadcast, createWhatsAppBroadcast, deleteWhatsAppBroadcast, executeWhatsAppBroadcastBatch, getWhatsAppBroadcast, getWhatsAppBroadcastAnalytics, getWhatsAppBroadcastExecution, getWhatsAppBroadcastRecipient, getWhatsAppBroadcastSchedule, listWhatsAppBroadcastRecipients, listWhatsAppBroadcastReport, listWhatsAppTemplates, prepareWhatsAppBroadcast, retryWhatsAppBroadcastFailures, scheduleWhatsAppBroadcast, unscheduleWhatsAppBroadcast } from '../../services/Apis/crm';
-import { apiMessage, EmptyState, ErrorState, LoadingState, PaginationControls } from '../Crm/common';
+import { apiMessage, EmptyState, ErrorState, formatDate, LoadingState, PaginationControls, toLocalDateTimeInput } from '../Crm/common';
 import BroadcastHistory from './BroadcastHistory';
 import TemplatePreview from '../WhatsAppTemplates/TemplatePreview';
 import '../Crm/crm.css';
@@ -24,12 +24,7 @@ const templateVariables = (template) => {
   return variables;
 };
 
-const formatTime = (value) => value ? new Date(value).toLocaleString() : '—';
-const toLocalDateTimeInput = (value) => {
-  if (!value) return '';
-  const date = new Date(value); const pad = (number) => String(number).padStart(2, '0');
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
-};
+const formatTime = (value) => formatDate(value, true);
 
 const WhatsAppBroadcasts = () => {
   const [templates, setTemplates] = useState([]); const [templateId, setTemplateId] = useState('');
