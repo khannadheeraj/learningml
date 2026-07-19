@@ -15,11 +15,24 @@ beforeEach(() => { jest.clearAllMocks(); crm.listWhatsAppConversations.mockResol
 test('loads authorized conversations, marks selection viewed, and shows chronological messages', async () => {
   render(<MemoryRouter initialEntries={['/whatsapp-inbox']}><Routes><Route path="/whatsapp-inbox" element={<WhatsAppInbox />} /></Routes></MemoryRouter>);
   expect(await screen.findByText('Asha Sen')).toBeInTheDocument();
+  expect(screen.getAllByText('+91 98765 43210').length).toBeGreaterThan(0);
   expect(screen.getByText('2')).toBeInTheDocument();
   fireEvent.click(screen.getByRole('button', { name: /Asha Sen/i }));
   expect(await screen.findByText('Interested')).toBeInTheDocument();
   await waitFor(() => expect(crm.markWhatsAppConversationViewed).toHaveBeenCalledWith('conversation-id'));
   expect(screen.queryByText('2')).not.toBeInTheDocument();
+});
+
+test('uses normalized phone fallback and shows unknown phone as title and header', async () => {
+  const normalized = { ...conversation, contact: { displayName: 'Fallback', normalizedPhone: '919111122233', phone: '' }, phone: '' };
+  const unknown = { ...conversation, id: 'unknown-id', contact: null, phone: '919222233344', remotePhone: '919222233344' };
+  crm.listWhatsAppConversations.mockResolvedValue({ data: { data: [normalized, unknown], pagination: { ...pagination, totalRecords: 2 } } });
+  render(<MemoryRouter initialEntries={['/whatsapp-inbox']}><Routes><Route path="/whatsapp-inbox" element={<WhatsAppInbox />} /></Routes></MemoryRouter>);
+  expect(await screen.findByText('Fallback')).toBeInTheDocument();
+  expect(screen.getAllByText('+91 91111 22233').length).toBeGreaterThan(0);
+  expect(screen.getAllByText('+91 92222 33344').length).toBeGreaterThan(0);
+  fireEvent.click(screen.getByRole('button', { name: /\+91 92222 33344/ }));
+  expect(screen.getAllByText('+91 92222 33344').length).toBeGreaterThan(0);
 });
 
 test('renders active window, sends once, and retries uncertain replies with the same key', async () => {
