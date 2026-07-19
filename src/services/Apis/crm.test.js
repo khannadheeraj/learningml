@@ -1,7 +1,7 @@
 import apiClient from './client';
 import {
   analyzeContactImport, createContact, getWhatsAppTemplate, listContacts,
-  cancelWhatsAppBroadcast, confirmWhatsAppBroadcast, createWhatsAppBroadcast, deleteWhatsAppBroadcast, executeWhatsAppBroadcastBatch, getWhatsAppBroadcast, getWhatsAppBroadcastAnalytics, getWhatsAppBroadcastExecution, getWhatsAppBroadcastRecipient, getWhatsAppBroadcastSchedule, listWhatsAppBroadcastRecipients, listWhatsAppBroadcastReport, listWhatsAppTemplates, listWhatsAppConversations, listWhatsAppConversationMessages, markWhatsAppConversationViewed, prepareWhatsAppBroadcast, retryWhatsAppBroadcastFailures, scheduleWhatsAppBroadcast, sendWhatsAppTemplate, syncWhatsAppTemplates, unscheduleWhatsAppBroadcast, updateStaffUser,
+  cancelWhatsAppBroadcast, confirmWhatsAppBroadcast, createWhatsAppBroadcast, deleteWhatsAppBroadcast, executeWhatsAppBroadcastBatch, getWhatsAppBroadcast, getWhatsAppBroadcastAnalytics, getWhatsAppBroadcastExecution, getWhatsAppBroadcastRecipient, getWhatsAppBroadcastSchedule, listWhatsAppBroadcastRecipients, listWhatsAppBroadcastReport, listWhatsAppBroadcasts, listWhatsAppTemplates, listWhatsAppConversations, listWhatsAppConversationMessages, markWhatsAppConversationViewed, prepareWhatsAppBroadcast, retryWhatsAppBroadcastFailures, scheduleWhatsAppBroadcast, sendWhatsAppTemplate, syncWhatsAppTemplates, unscheduleWhatsAppBroadcast, updateStaffUser,
 } from './crm';
 
 jest.mock('./client', () => ({ get: jest.fn(), post: jest.fn(), patch: jest.fn(), delete: jest.fn() }));
@@ -26,8 +26,9 @@ test('WhatsApp template catalogue calls reuse the authenticated shared API clien
   expect(apiClient.get).toHaveBeenCalledWith('/whatsapp-templates/template-id');
   expect(apiClient.post).toHaveBeenCalledWith('/whatsapp-templates/sync');
   expect(apiClient.post).toHaveBeenCalledWith('/whatsapp-template-sends', { contactId: 'contact-id', templateId: 'template-id', variableValues: ['Asha'] }, { headers: { 'Idempotency-Key': 'idempotency-key' } });
-  createWhatsAppBroadcast({ templateId: 'template-id' }); getWhatsAppBroadcast('broadcast-id'); prepareWhatsAppBroadcast('broadcast-id', 3); listWhatsAppBroadcastRecipients('broadcast-id', { status: 'ELIGIBLE' }); deleteWhatsAppBroadcast('broadcast-id', 3);
+  createWhatsAppBroadcast({ templateId: 'template-id' }); listWhatsAppBroadcasts({ page: 1, pageSize: 25 }); getWhatsAppBroadcast('broadcast-id'); prepareWhatsAppBroadcast('broadcast-id', 3); listWhatsAppBroadcastRecipients('broadcast-id', { status: 'ELIGIBLE' }); deleteWhatsAppBroadcast('broadcast-id', 3);
   expect(apiClient.post).toHaveBeenCalledWith('/whatsapp-broadcasts', { templateId: 'template-id' });
+  expect(apiClient.get).toHaveBeenCalledWith('/whatsapp-broadcasts', { params: { page: 1, pageSize: 25 } });
   expect(apiClient.get).toHaveBeenCalledWith('/whatsapp-broadcasts/broadcast-id');
   expect(apiClient.post).toHaveBeenCalledWith('/whatsapp-broadcasts/broadcast-id/prepare', { version: 3 });
   expect(apiClient.get).toHaveBeenCalledWith('/whatsapp-broadcasts/broadcast-id/recipients', { params: { status: 'ELIGIBLE' } });
