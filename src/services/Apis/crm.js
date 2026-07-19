@@ -30,6 +30,9 @@ export const getDashboardSummary = () => apiClient.get('/dashboards/summary');
 export const listWhatsAppTemplates = (params) => apiClient.get('/whatsapp-templates', { params });
 export const getWhatsAppTemplate = (templateId) => apiClient.get(`/whatsapp-templates/${templateId}`);
 export const syncWhatsAppTemplates = () => apiClient.post('/whatsapp-templates/sync');
+export const sendWhatsAppTemplate = (payload, idempotencyKey) => apiClient.post('/whatsapp-template-sends', payload, {
+  headers: { 'Idempotency-Key': idempotencyKey },
+});
 
 export const analyzeContactImport = (file) => {
   const form = new FormData();

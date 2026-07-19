@@ -17,6 +17,7 @@ jest.mock('../../services/Apis/crm', () => ({
   assignLead: jest.fn(), listLeadAssignments: jest.fn(), listCounsellorOptions: jest.fn(),
   listReassignmentRequests: jest.fn(), createReassignmentRequest: jest.fn(), approveReassignmentRequest: jest.fn(), rejectReassignmentRequest: jest.fn(), cancelReassignmentRequest: jest.fn(),
   listStaffUsers: jest.fn(), createStaffUser: jest.fn(), updateStaffUser: jest.fn(), resetStaffPassword: jest.fn(),
+  listWhatsAppTemplates: jest.fn(), getWhatsAppTemplate: jest.fn(), sendWhatsAppTemplate: jest.fn(),
   analyzeContactImport: jest.fn(), previewContactImport: jest.fn(), getContactImport: jest.fn(), commitContactImport: jest.fn(), downloadContactImportRejections: jest.fn(),
 }));
 
