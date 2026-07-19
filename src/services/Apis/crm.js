@@ -33,6 +33,9 @@ export const syncWhatsAppTemplates = () => apiClient.post('/whatsapp-templates/s
 export const sendWhatsAppTemplate = (payload, idempotencyKey) => apiClient.post('/whatsapp-template-sends', payload, {
   headers: { 'Idempotency-Key': idempotencyKey },
 });
+export const listWhatsAppConversations = (params) => apiClient.get('/whatsapp-conversations', { params });
+export const listWhatsAppConversationMessages = (conversationId, params) => apiClient.get(`/whatsapp-conversations/${conversationId}/messages`, { params });
+export const markWhatsAppConversationViewed = (conversationId) => apiClient.post(`/whatsapp-conversations/${conversationId}/view`);
 
 export const analyzeContactImport = (file) => {
   const form = new FormData();

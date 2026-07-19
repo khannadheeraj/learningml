@@ -1,7 +1,7 @@
 import apiClient from './client';
 import {
   analyzeContactImport, createContact, getWhatsAppTemplate, listContacts,
-  listWhatsAppTemplates, sendWhatsAppTemplate, syncWhatsAppTemplates, updateStaffUser,
+  listWhatsAppTemplates, listWhatsAppConversations, listWhatsAppConversationMessages, markWhatsAppConversationViewed, sendWhatsAppTemplate, syncWhatsAppTemplates, updateStaffUser,
 } from './crm';
 
 jest.mock('./client', () => ({ get: jest.fn(), post: jest.fn(), patch: jest.fn() }));
@@ -26,6 +26,10 @@ test('WhatsApp template catalogue calls reuse the authenticated shared API clien
   expect(apiClient.get).toHaveBeenCalledWith('/whatsapp-templates/template-id');
   expect(apiClient.post).toHaveBeenCalledWith('/whatsapp-templates/sync');
   expect(apiClient.post).toHaveBeenCalledWith('/whatsapp-template-sends', { contactId: 'contact-id', templateId: 'template-id', variableValues: ['Asha'] }, { headers: { 'Idempotency-Key': 'idempotency-key' } });
+  listWhatsAppConversations({ unreadOnly: true }); listWhatsAppConversationMessages('conversation-id', { cursor: 'cursor' }); markWhatsAppConversationViewed('conversation-id');
+  expect(apiClient.get).toHaveBeenCalledWith('/whatsapp-conversations', { params: { unreadOnly: true } });
+  expect(apiClient.get).toHaveBeenCalledWith('/whatsapp-conversations/conversation-id/messages', { params: { cursor: 'cursor' } });
+  expect(apiClient.post).toHaveBeenCalledWith('/whatsapp-conversations/conversation-id/view');
 });
 
 test('import analysis sends multipart form data without a second HTTP client', () => {
