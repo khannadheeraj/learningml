@@ -13,43 +13,42 @@ export const createIdempotencyKey = () => {
 };
 
 const tokensIn = (value) => [...String(value || '').matchAll(tokenPattern)].map((match) => match[1]);
+const variablePositions = (value) => [...new Set(tokensIn(value))].sort((left, right) => Number(left) - Number(right));
 
 export const templateVariableFields = (template) => {
   const fields = [];
-  (template?.headers || []).forEach((header, headerIndex) => tokensIn(header.text).forEach((token, index) => fields.push({
-    key: `header-${headerIndex}-${index}`, section: 'Header', token, headerIndex,
+  (template?.headers || []).forEach((header, headerIndex) => variablePositions(header.text).forEach((token) => fields.push({
+    key: `header-${headerIndex}-${token}`, section: 'Header', token, headerIndex,
     label: `Header variable {{${token}}}`,
   })));
-  tokensIn(template?.body).forEach((token, index) => fields.push({
-    key: `body-${index}`, section: 'Body', token, label: `Body variable {{${token}}}`,
+  variablePositions(template?.body?.text).forEach((token) => fields.push({
+    key: `body-${token}`, section: 'Body', token, label: `Body variable {{${token}}}`,
   }));
   (template?.buttons || []).forEach((button, buttonIndex) => {
-    if (button.type === 'URL' && button.url) tokensIn(button.url).forEach((token, index) => fields.push({
-      key: `button-${buttonIndex}-${index}`, section: 'Dynamic URL button', token, buttonIndex,
+    if (button.type === 'URL' && button.url) variablePositions(button.url).forEach((token) => fields.push({
+      key: `button-${buttonIndex}-${token}`, section: 'Dynamic URL button', token, buttonIndex,
       label: `Dynamic URL button variable {{${token}}}`,
     }));
   });
   return fields;
 };
 
-const renderWithValues = (text, fields, values, predicate) => {
-  let tokenIndex = 0;
-  return String(text || '').replace(tokenPattern, (match) => {
-    const field = fields.find((item) => predicate(item, tokenIndex));
-    tokenIndex += 1;
+const renderWithValues = (text, fields, values, predicate) => String(text || '').replace(tokenPattern, (match, token) => {
+    const field = fields.find((item) => predicate(item, token));
     return field && values[field.key] ? values[field.key] : match;
   });
-};
 
 export const renderTemplateWithValues = (template, fields, values) => ({
   ...template,
   headers: (template.headers || []).map((header, headerIndex) => ({ ...header,
-    text: renderWithValues(header.text, fields, values, (field, tokenIndex) => field.section === 'Header' && field.headerIndex === headerIndex && Number(field.key.split('-').slice(-1)[0]) === tokenIndex),
+    text: renderWithValues(header.text, fields, values, (field, token) => field.section === 'Header' && field.headerIndex === headerIndex && field.token === token),
   })),
-  body: renderWithValues(template.body, fields, values, (field, tokenIndex) => field.section === 'Body' && Number(field.key.split('-').slice(-1)[0]) === tokenIndex),
+  body: template.body ? { ...template.body,
+    text: renderWithValues(template.body.text, fields, values, (field, token) => field.section === 'Body' && field.token === token),
+  } : template.body,
   footer: template.footer,
   buttons: (template.buttons || []).map((button, buttonIndex) => ({ ...button,
-    url: renderWithValues(button.url, fields, values, (field, tokenIndex) => field.section === 'Dynamic URL button' && field.buttonIndex === buttonIndex && Number(field.key.split('-').slice(-1)[0]) === tokenIndex),
+    url: renderWithValues(button.url, fields, values, (field, token) => field.section === 'Dynamic URL button' && field.buttonIndex === buttonIndex && field.token === token),
   })),
 });
 

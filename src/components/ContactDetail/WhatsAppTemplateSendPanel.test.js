@@ -10,7 +10,7 @@ jest.mock('../../services/Apis/crm', () => ({
 
 const template = {
   id: 'template-id', name: 'admission_update', language: 'en_US', category: 'UTILITY', status: 'APPROVED',
-  headers: [{ format: 'TEXT', text: 'Hello {{1}}' }], body: 'Your batch is {{1}}.', footer: 'GEO IAS',
+  headers: [{ type: 'HEADER', format: 'TEXT', text: 'Hello {{1}}' }], body: { type: 'BODY', text: 'Your batch is {{1}}.' }, footer: { type: 'FOOTER', text: 'GEO IAS' },
   buttons: [{ type: 'URL', text: 'Open', url: 'https://example.test/{{1}}' }],
 };
 const contact = { normalizedPhone: '919876543210', isActive: true };
@@ -28,7 +28,7 @@ test('orders header, body, and dynamic URL button variables and renders them saf
   expect(fields.map((field) => field.label)).toEqual(['Header variable {{1}}', 'Body variable {{1}}', 'Dynamic URL button variable {{1}}']);
   const rendered = renderTemplateWithValues(template, fields, { [fields[0].key]: 'Asha', [fields[1].key]: 'July', [fields[2].key]: 'token' });
   expect(rendered.headers[0].text).toBe('Hello Asha');
-  expect(rendered.body).toBe('Your batch is July.');
+  expect(rendered.body.text).toBe('Your batch is July.');
   expect(rendered.buttons[0].url).toBe('https://example.test/token');
 });
 
