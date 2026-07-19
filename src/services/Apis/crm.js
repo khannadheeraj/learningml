@@ -42,6 +42,11 @@ export const getWhatsAppBroadcast = (broadcastId) => apiClient.get(`/whatsapp-br
 export const prepareWhatsAppBroadcast = (broadcastId, version) => apiClient.post(`/whatsapp-broadcasts/${broadcastId}/prepare`, { version });
 export const listWhatsAppBroadcastRecipients = (broadcastId, params) => apiClient.get(`/whatsapp-broadcasts/${broadcastId}/recipients`, { params });
 export const deleteWhatsAppBroadcast = (broadcastId, version) => apiClient.delete(`/whatsapp-broadcasts/${broadcastId}`, { params: { version } });
+export const confirmWhatsAppBroadcast = (broadcastId, version) => apiClient.post(`/whatsapp-broadcasts/${broadcastId}/confirm`, { version });
+export const executeWhatsAppBroadcastBatch = (broadcastId, batchSize) => apiClient.post(`/whatsapp-broadcasts/${broadcastId}/execute-batch`, { batchSize });
+export const getWhatsAppBroadcastExecution = (broadcastId) => apiClient.get(`/whatsapp-broadcasts/${broadcastId}/execution`);
+export const retryWhatsAppBroadcastFailures = (broadcastId, version) => apiClient.post(`/whatsapp-broadcasts/${broadcastId}/retry-failures`, { version });
+export const cancelWhatsAppBroadcast = (broadcastId, version) => apiClient.post(`/whatsapp-broadcasts/${broadcastId}/cancel`, { version });
 
 export const analyzeContactImport = (file) => {
   const form = new FormData();

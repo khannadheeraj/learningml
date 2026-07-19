@@ -1,7 +1,7 @@
 import apiClient from './client';
 import {
   analyzeContactImport, createContact, getWhatsAppTemplate, listContacts,
-  createWhatsAppBroadcast, deleteWhatsAppBroadcast, getWhatsAppBroadcast, listWhatsAppBroadcastRecipients, listWhatsAppTemplates, listWhatsAppConversations, listWhatsAppConversationMessages, markWhatsAppConversationViewed, prepareWhatsAppBroadcast, sendWhatsAppTemplate, syncWhatsAppTemplates, updateStaffUser,
+  cancelWhatsAppBroadcast, confirmWhatsAppBroadcast, createWhatsAppBroadcast, deleteWhatsAppBroadcast, executeWhatsAppBroadcastBatch, getWhatsAppBroadcast, getWhatsAppBroadcastExecution, listWhatsAppBroadcastRecipients, listWhatsAppTemplates, listWhatsAppConversations, listWhatsAppConversationMessages, markWhatsAppConversationViewed, prepareWhatsAppBroadcast, retryWhatsAppBroadcastFailures, sendWhatsAppTemplate, syncWhatsAppTemplates, updateStaffUser,
 } from './crm';
 
 jest.mock('./client', () => ({ get: jest.fn(), post: jest.fn(), patch: jest.fn(), delete: jest.fn() }));
@@ -32,6 +32,12 @@ test('WhatsApp template catalogue calls reuse the authenticated shared API clien
   expect(apiClient.post).toHaveBeenCalledWith('/whatsapp-broadcasts/broadcast-id/prepare', { version: 3 });
   expect(apiClient.get).toHaveBeenCalledWith('/whatsapp-broadcasts/broadcast-id/recipients', { params: { status: 'ELIGIBLE' } });
   expect(apiClient.delete).toHaveBeenCalledWith('/whatsapp-broadcasts/broadcast-id', { params: { version: 3 } });
+  confirmWhatsAppBroadcast('broadcast-id', 3); executeWhatsAppBroadcastBatch('broadcast-id', 25); getWhatsAppBroadcastExecution('broadcast-id'); retryWhatsAppBroadcastFailures('broadcast-id', 4); cancelWhatsAppBroadcast('broadcast-id', 4);
+  expect(apiClient.post).toHaveBeenCalledWith('/whatsapp-broadcasts/broadcast-id/confirm', { version: 3 });
+  expect(apiClient.post).toHaveBeenCalledWith('/whatsapp-broadcasts/broadcast-id/execute-batch', { batchSize: 25 });
+  expect(apiClient.get).toHaveBeenCalledWith('/whatsapp-broadcasts/broadcast-id/execution');
+  expect(apiClient.post).toHaveBeenCalledWith('/whatsapp-broadcasts/broadcast-id/retry-failures', { version: 4 });
+  expect(apiClient.post).toHaveBeenCalledWith('/whatsapp-broadcasts/broadcast-id/cancel', { version: 4 });
   listWhatsAppConversations({ unreadOnly: true }); listWhatsAppConversationMessages('conversation-id', { cursor: 'cursor' }); markWhatsAppConversationViewed('conversation-id');
   expect(apiClient.get).toHaveBeenCalledWith('/whatsapp-conversations', { params: { unreadOnly: true } });
   expect(apiClient.get).toHaveBeenCalledWith('/whatsapp-conversations/conversation-id/messages', { params: { cursor: 'cursor' } });
