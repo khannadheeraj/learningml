@@ -58,6 +58,13 @@ export const unscheduleWhatsAppBroadcast = (broadcastId, version) => apiClient.d
 export const retryWhatsAppBroadcastFailures = (broadcastId, version) => apiClient.post(`/whatsapp-broadcasts/${broadcastId}/retry-failures`, { version });
 export const cancelWhatsAppBroadcast = (broadcastId, version) => apiClient.post(`/whatsapp-broadcasts/${broadcastId}/cancel`, { version });
 
+export const listFollowUps = (params) => apiClient.get('/follow-ups', { params });
+export const getFollowUp = (followUpId) => apiClient.get(`/follow-ups/${followUpId}`);
+export const createFollowUp = (payload) => apiClient.post('/follow-ups', payload);
+export const updateFollowUp = (followUpId, payload) => apiClient.patch(`/follow-ups/${followUpId}`, payload);
+export const completeFollowUp = (followUpId, payload) => apiClient.post(`/follow-ups/${followUpId}/complete`, payload);
+export const cancelFollowUp = (followUpId, payload) => apiClient.post(`/follow-ups/${followUpId}/cancel`, payload);
+
 export const analyzeContactImport = (file) => {
   const form = new FormData();
   form.append('file', file);

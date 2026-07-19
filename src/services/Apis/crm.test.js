@@ -1,7 +1,7 @@
 import apiClient from './client';
 import {
   analyzeContactImport, createContact, getWhatsAppTemplate, listContacts,
-  cancelWhatsAppBroadcast, confirmWhatsAppBroadcast, createWhatsAppBroadcast, deleteWhatsAppBroadcast, executeWhatsAppBroadcastBatch, getWhatsAppBroadcast, getWhatsAppBroadcastAnalytics, getWhatsAppBroadcastExecution, getWhatsAppBroadcastRecipient, getWhatsAppBroadcastSchedule, listWhatsAppBroadcastRecipients, listWhatsAppBroadcastReport, listWhatsAppBroadcasts, listWhatsAppTemplates, listWhatsAppConversations, listWhatsAppConversationMessages, markWhatsAppConversationViewed, prepareWhatsAppBroadcast, retryWhatsAppBroadcastFailures, scheduleWhatsAppBroadcast, sendWhatsAppTemplate, syncWhatsAppTemplates, unscheduleWhatsAppBroadcast, updateStaffUser,
+  cancelWhatsAppBroadcast, confirmWhatsAppBroadcast, createWhatsAppBroadcast, createFollowUp, deleteWhatsAppBroadcast, executeWhatsAppBroadcastBatch, getFollowUp, getWhatsAppBroadcast, getWhatsAppBroadcastAnalytics, getWhatsAppBroadcastExecution, getWhatsAppBroadcastRecipient, getWhatsAppBroadcastSchedule, listFollowUps, listWhatsAppBroadcastRecipients, listWhatsAppBroadcastReport, listWhatsAppBroadcasts, listWhatsAppTemplates, listWhatsAppConversations, listWhatsAppConversationMessages, markWhatsAppConversationViewed, prepareWhatsAppBroadcast, retryWhatsAppBroadcastFailures, scheduleWhatsAppBroadcast, sendWhatsAppTemplate, syncWhatsAppTemplates, unscheduleWhatsAppBroadcast, updateFollowUp, completeFollowUp, cancelFollowUp, updateStaffUser,
 } from './crm';
 
 jest.mock('./client', () => ({ get: jest.fn(), post: jest.fn(), patch: jest.fn(), delete: jest.fn() }));
@@ -67,4 +67,15 @@ test('import analysis sends multipart form data without a second HTTP client', (
   expect(apiClient.post).toHaveBeenCalledTimes(1);
   expect(apiClient.post.mock.calls[0][0]).toBe('/contact-imports/analyze');
   expect(apiClient.post.mock.calls[0][1]).toBeInstanceOf(FormData);
+});
+
+test('follow-up calls use the authenticated shared API client and versioned actions', () => {
+  listFollowUps({ page: 1, overdue: true }); getFollowUp('follow-up-id'); createFollowUp({ contactId: 'contact-id', assignedCounsellorId: 'staff-id', dueAt: '2030-01-01T00:00:00.000Z' });
+  updateFollowUp('follow-up-id', { version: 1, purpose: 'Call back' }); completeFollowUp('follow-up-id', { version: 2 }); cancelFollowUp('follow-up-id', { version: 2 });
+  expect(apiClient.get).toHaveBeenCalledWith('/follow-ups', { params: { page: 1, overdue: true } });
+  expect(apiClient.get).toHaveBeenCalledWith('/follow-ups/follow-up-id');
+  expect(apiClient.post).toHaveBeenCalledWith('/follow-ups', expect.objectContaining({ contactId: 'contact-id' }));
+  expect(apiClient.patch).toHaveBeenCalledWith('/follow-ups/follow-up-id', { version: 1, purpose: 'Call back' });
+  expect(apiClient.post).toHaveBeenCalledWith('/follow-ups/follow-up-id/complete', { version: 2 });
+  expect(apiClient.post).toHaveBeenCalledWith('/follow-ups/follow-up-id/cancel', { version: 2 });
 });

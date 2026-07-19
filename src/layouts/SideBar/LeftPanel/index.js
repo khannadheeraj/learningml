@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaAddressBook, FaExchangeAlt, FaFileImport, FaPlus, FaTachometerAlt, FaUserTie, FaUsers, FaWhatsapp } from 'react-icons/fa';
+import { FaAddressBook, FaCalendarCheck, FaExchangeAlt, FaFileImport, FaPlus, FaTachometerAlt, FaUserTie, FaUsers, FaWhatsapp } from 'react-icons/fa';
 import { CNavItem } from '@coreui/react';
 
 const item = (name, to, Icon, roles = ['SUPER_ADMIN', 'COUNSELLOR']) => ({ component: CNavItem, name, to, icon: <Icon className="nav-icon" style={{ color: '#0c4b61' }}/>, roles });
@@ -14,6 +14,7 @@ const menuList = [
   item('Interested Leads', '/leads/interested', FaUsers, ['SUPER_ADMIN']),
   item('My Leads', '/my-leads', FaUserTie, ['COUNSELLOR']),
   item('Reassignment Requests', '/reassignment-requests', FaExchangeAlt),
+  item('Follow-ups', '/follow-ups', FaCalendarCheck),
   item('WhatsApp Templates', '/whatsapp-templates', FaWhatsapp),
   item('WhatsApp Inbox', '/whatsapp-inbox', FaWhatsapp),
   item('WhatsApp Broadcasts', '/whatsapp-broadcasts', FaWhatsapp, ['SUPER_ADMIN']),

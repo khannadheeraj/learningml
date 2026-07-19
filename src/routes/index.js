@@ -12,6 +12,7 @@ const WhatsAppTemplates = React.lazy(() => import('../components/WhatsAppTemplat
 const WhatsAppTemplateDetail = React.lazy(() => import('../components/WhatsAppTemplates/Detail'));
 const WhatsAppInbox = React.lazy(() => import('../components/WhatsAppInbox'));
 const WhatsAppBroadcasts = React.lazy(() => import('../components/WhatsAppBroadcasts'));
+const FollowUps = React.lazy(() => import('../components/FollowUps'));
 
 const allRoles = ['SUPER_ADMIN', 'COUNSELLOR'];
 const admin = ['SUPER_ADMIN'];
@@ -33,6 +34,7 @@ const routes = [
   { path: '/whatsapp-templates/:templateId', name: 'WhatsApp Template Preview', roles: allRoles, element: <WhatsAppTemplateDetail /> },
   { path: '/whatsapp-inbox', name: 'WhatsApp Inbox', roles: allRoles, element: <WhatsAppInbox /> },
   { path: '/whatsapp-broadcasts', name: 'WhatsApp Broadcasts', roles: admin, element: <WhatsAppBroadcasts /> },
+  { path: '/follow-ups', name: 'Follow-ups', roles: allRoles, element: <FollowUps /> },
 ];
 export const routesForRole = (role) => routes.filter((route) => !route.roles || route.roles.includes(role));
 export default routes;
