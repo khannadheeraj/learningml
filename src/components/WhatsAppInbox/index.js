@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { CAlert, CBadge, CButton, CCard, CCardBody, CCardHeader, CCol, CFormInput, CFormLabel, CFormSelect, CFormTextarea, CRow } from '@coreui/react';
 import { useSearchParams } from 'react-router-dom';
 import { listWhatsAppConversationMessages, listWhatsAppConversations, markWhatsAppConversationViewed, sendWhatsAppConversationReply } from '../../services/Apis/crm';
-import { apiMessage, EmptyState, ErrorState, formatDate, labelFor, LoadingState, PaginationControls, StatusBadge } from '../Crm/common';
+import { apiMessage, EmptyState, ErrorState, formatDate, labelFor, LoadingState, PaginationControls } from '../Crm/common';
 import '../Crm/crm.css';
 
 const paramsFrom = (searchParams) => ({ page: Number(searchParams.get('page') || 1), pageSize: 25, search: searchParams.get('search') || '', reconciliationStatus: searchParams.get('reconciliationStatus') || '', unreadOnly: searchParams.get('unreadOnly') === 'true' });
@@ -12,7 +12,7 @@ const newKey = () => `reply-${window.crypto?.randomUUID?.() || `${Date.now()}-${
 const WhatsAppInbox = () => {
   const [searchParams, setSearchParams] = useSearchParams(); const params = useMemo(() => paramsFrom(searchParams), [searchParams]);
   const [filters, setFilters] = useState(params); const [conversations, setConversations] = useState([]); const [pagination, setPagination] = useState(null); const [loading, setLoading] = useState(true); const [error, setError] = useState('');
-  const [selected, setSelected] = useState(null); const [messages, setMessages] = useState([]); const [messagePage, setMessagePage] = useState(null); const [messageLoading, setMessageLoading] = useState(false); const [messageError, setMessageError] = useState('');
+  const [selected, setSelected] = useState(null); const [messages, setMessages] = useState([]); const [, setMessagePage] = useState(null); const [messageLoading, setMessageLoading] = useState(false); const [messageError, setMessageError] = useState('');
   const [reply, setReply] = useState(''); const [attempt, setAttempt] = useState(null); const [replying, setReplying] = useState(false); const [replyFeedback, setReplyFeedback] = useState('');
   useEffect(() => { setFilters(params); }, [params]);
   const load = useCallback(async () => { setLoading(true); setError(''); try { const response = await listWhatsAppConversations(params); setConversations(response.data.data || []); setPagination(response.data.pagination || null); } catch (requestError) { setError(apiMessage(requestError, 'WhatsApp conversations could not be loaded.')); } finally { setLoading(false); } }, [params]);
