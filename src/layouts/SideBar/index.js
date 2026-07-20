@@ -5,10 +5,28 @@ import 'simplebar/dist/simplebar.min.css';
 import { SideBarNav } from './SideBarNav';
 import { navigationForRole } from '../SideBar/LeftPanel/index';
 import { useAuth } from '../../auth/AuthProvider';
+import { getFollowUpReminderSummary } from '../../services/Apis/crm';
+import { useEffect, useState } from 'react';
 
 const SideBar = ({ sidebarShow, setSidebarShow }) => {
   const { user } = useAuth();
-  const allowedNavigation = navigationForRole(user?.role);
+  const [reminderCount, setReminderCount] = useState(0);
+  useEffect(() => {
+    let active = true;
+    if (!user?.role) return undefined;
+    getFollowUpReminderSummary().then((response) => {
+      if (active) {
+        const counts = response?.data?.data || response?.data || {};
+        setReminderCount(Object.values(counts).reduce((total, value) => total + (Number(value) || 0), 0));
+      }
+    }).catch(() => { if (active) setReminderCount(0); });
+    return () => { active = false; };
+  }, [user?.role]);
+  const allowedNavigation = navigationForRole(user?.role).map((entry) => (
+    entry.to === '/follow-up-reminders' && reminderCount > 0
+      ? { ...entry, badge: { color: 'danger', text: String(reminderCount) } }
+      : entry
+  ));
   return (
     <CSidebar
       position="fixed"

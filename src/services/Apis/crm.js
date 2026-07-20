@@ -66,6 +66,10 @@ export const completeFollowUp = (followUpId, payload) => apiClient.post(`/follow
 export const cancelFollowUp = (followUpId, payload) => apiClient.post(`/follow-ups/${followUpId}/cancel`, payload);
 export const getFollowUpWorkQueue = (params) => apiClient.get('/follow-ups/work-queue', { params });
 export const getFollowUpWorkQueueSummary = (params) => apiClient.get('/follow-ups/work-queue/summary', { params });
+export const listFollowUpReminders = (params) => apiClient.get('/follow-up-reminders', { params });
+export const getFollowUpReminderSummary = (params) => apiClient.get('/follow-up-reminders/summary', { params });
+export const snoozeFollowUpReminder = (followUpId, snoozedUntil) => apiClient.post(`/follow-up-reminders/${followUpId}/snooze`, { snoozedUntil });
+export const dismissFollowUpReminder = (followUpId) => apiClient.post(`/follow-up-reminders/${followUpId}/dismiss`);
 
 export const analyzeContactImport = (file) => {
   const form = new FormData();

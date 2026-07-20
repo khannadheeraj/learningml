@@ -15,6 +15,7 @@ const menuList = [
   item('My Leads', '/my-leads', FaUserTie, ['COUNSELLOR']),
   item('Reassignment Requests', '/reassignment-requests', FaExchangeAlt),
   item('Follow-ups', '/follow-ups', FaCalendarCheck),
+  item('Follow-up Reminders', '/follow-up-reminders', FaCalendarCheck),
   item('WhatsApp Templates', '/whatsapp-templates', FaWhatsapp),
   item('WhatsApp Inbox', '/whatsapp-inbox', FaWhatsapp),
   item('WhatsApp Broadcasts', '/whatsapp-broadcasts', FaWhatsapp, ['SUPER_ADMIN']),
