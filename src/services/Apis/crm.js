@@ -81,3 +81,7 @@ export const previewContactImport = (importId, payload, params) => apiClient.pos
 export const getContactImport = (importId, params) => apiClient.get(`/contact-imports/${importId}`, { params });
 export const commitContactImport = (importId) => apiClient.post(`/contact-imports/${importId}/commit`);
 export const downloadContactImportRejections = (importId) => apiClient.get(`/contact-imports/${importId}/rejections`, { responseType: 'blob' });
+export const getCounsellingReportSummary = (params) => apiClient.get('/counselling-reports/summary', { params });
+export const getCounsellingReportOutcomes = (params) => apiClient.get('/counselling-reports/outcomes', { params });
+export const getCounsellingReportProductivity = (params) => apiClient.get('/counselling-reports/productivity', { params });
+export const listCounsellingReportFollowUps = (params) => apiClient.get('/counselling-reports/follow-ups', { params });

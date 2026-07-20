@@ -14,6 +14,7 @@ const WhatsAppInbox = React.lazy(() => import('../components/WhatsAppInbox'));
 const WhatsAppBroadcasts = React.lazy(() => import('../components/WhatsAppBroadcasts'));
 const FollowUps = React.lazy(() => import('../components/FollowUps'));
 const FollowUpReminders = React.lazy(() => import('../components/FollowUpReminders'));
+const CounsellingReports = React.lazy(() => import('../components/CounsellingReports'));
 
 const allRoles = ['SUPER_ADMIN', 'COUNSELLOR'];
 const admin = ['SUPER_ADMIN'];
@@ -37,6 +38,7 @@ const routes = [
   { path: '/whatsapp-broadcasts', name: 'WhatsApp Broadcasts', roles: admin, element: <WhatsAppBroadcasts /> },
   { path: '/follow-ups', name: 'Follow-ups', roles: allRoles, element: <FollowUps /> },
   { path: '/follow-up-reminders', name: 'Follow-up Reminders', roles: allRoles, element: <FollowUpReminders /> },
+  { path: '/counselling-reports', name: 'Counselling Reports', roles: allRoles, element: <CounsellingReports /> },
 ]; 
 export const routesForRole = (role) => routes.filter((route) => !route.roles || route.roles.includes(role));
 export default routes;
