@@ -64,6 +64,7 @@ export const createFollowUp = (payload) => apiClient.post('/follow-ups', payload
 export const updateFollowUp = (followUpId, payload) => apiClient.patch(`/follow-ups/${followUpId}`, payload);
 export const completeFollowUp = (followUpId, payload) => apiClient.post(`/follow-ups/${followUpId}/complete`, payload);
 export const cancelFollowUp = (followUpId, payload) => apiClient.post(`/follow-ups/${followUpId}/cancel`, payload);
+export const getFollowUpCompletionRecommendation = (followUpId, outcome) => apiClient.get(`/follow-ups/${followUpId}/completion-recommendation`, { params: { outcome } });
 export const getFollowUpWorkQueue = (params) => apiClient.get('/follow-ups/work-queue', { params });
 export const getFollowUpWorkQueueSummary = (params) => apiClient.get('/follow-ups/work-queue/summary', { params });
 export const listFollowUpReminders = (params) => apiClient.get('/follow-up-reminders', { params });
